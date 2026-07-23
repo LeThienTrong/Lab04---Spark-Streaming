@@ -1,15 +1,43 @@
 {
   "commit": "a6c775e",
-  "files": 59,
-  "total_loc": 13725,
-  "total_nodes": 58817,
-  "total_edges": 73587,
-  "total_functions": 522,
-  "total_classes": 153,
-  "edge_counts": {
-    "AST": 57760,
-    "CFG": 4987,
-    "DFG": 8259,
-    "CALL": 2581
+  "note": "baseline = upstream tree as cloned; after_replay = state once Task 6 added the _lab_replay_marker function plus a line-shifting header comment to optimum/version.py and reprocessed that one file",
+  "baseline": {
+    "python_files": 59,
+    "loc": 13725,
+    "nodes": 58817,
+    "edges": 73587,
+    "functions": 522,
+    "classes": 153,
+    "edge_counts": {
+      "AST": 57760,
+      "CFG": 4987,
+      "DFG": 8259,
+      "CALL": 2581
+    }
+  },
+  "after_replay": {
+    "python_files": 59,
+    "loc": 13731,
+    "nodes": 58831,
+    "edges": 73606,
+    "functions": 523,
+    "classes": 153,
+    "edge_counts": {
+      "AST": 57774,
+      "CFG": 4990,
+      "DFG": 8261,
+      "CALL": 2581
+    }
+  },
+  "replay_target": {
+    "rel_path": "optimum/version.py",
+    "file_id": "b3fc55405381fc8a",
+    "nodes_before": 5,
+    "nodes_after": 19,
+    "edges_before": 4,
+    "edges_after": 23,
+    "file_hash_before": "ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce",
+    "file_hash_after": "e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5",
+    "status": "PASS"
   }
 }

@@ -8,10 +8,16 @@ Connector) and **MongoDB** (source metadata, via Spark Structured Streaming).
 > Ubuntu with a checkpoint after each phase. This file is the reference; the
 > runbook is the sequence.
 
-**Team BDS** — Lê Thiện Trọng, Hà Công Thuận, Đặng Ngọc Tiên, Nguyễn Tấn Đồng.
+## Published Jupyter Book
 
-**Published Jupyter Book (the submission):**
-<https://lethientrong.github.io/Lab04---Spark-Streaming/>
+**<https://lethientrong.github.io/Lab04---Spark-Streaming/>** — the submission,
+built from the notebooks in `jupyter-book/` on this branch and served from
+`gh-pages`.
+
+## Team and course
+
+**Team BDS** — Lê Thiện Trọng, Hà Công Thuận, Đặng Ngọc Tiên, Nguyễn Tấn Đồng.
+Big Data course, Lab 04 — Incremental CPG Streaming Pipeline.
 
 **Assigned repository:** [`huggingface/optimum`](https://github.com/huggingface/optimum)
 (cloned at build time into `./optimum/`, not committed).
