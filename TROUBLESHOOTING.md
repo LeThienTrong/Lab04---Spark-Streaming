@@ -178,3 +178,222 @@ docker compose up -d
 Forgetting to delete the checkpoint is a classic: Spark resumes from the old
 offsets against a brand-new Kafka cluster whose offsets restart at zero, and the
 job silently processes nothing.
+
+---
+
+## 9. Neo4j sink connector task FAILED
+
+`run_pipeline.sh` stops with:
+
+```
+FAILED: neo4j-sink-cpg-nodes has a failed task.
+```
+
+The connector registered (so the config parsed) but the task died at runtime.
+Start here:
+
+```bash
+bash scripts/diagnose_connector.sh neo4j-sink-cpg-nodes
+```
+
+It pulls the task trace and matches it against the causes below. If you want to
+isolate whether the problem is the Cypher or the connection:
+
+```bash
+bash scripts/test_cypher.sh
+```
+
+That runs the exact statement the connector generates, by hand, against a fake
+event.
+
+### Cause A — dead letter queue replication factor (CONFIRMED, most common)
+
+Symptom:
+
+```
+ConnectException: Could not initialize dead letter queue with topic=cpg.nodes.dlq
+Caused by: InvalidReplicationFactorException: The target replication factor of 3
+cannot be reached because only 1 broker(s) are registered.
+```
+
+Kafka Connect creates the DLQ topic with **replication factor 3 by default**.
+This lab runs a single broker, so the topic cannot be created and the task dies
+during initialisation — before it ever contacts Neo4j. Despite appearing under
+a "neo4j-sink" connector, this is not a Neo4j problem at all.
+
+Fix — pin the factor to 1 (already present in the shipped configs):
+
+```json
+"errors.deadletterqueue.topic.replication.factor": "1"
+```
+
+Kafka Connect does not reload a changed config file on its own; the connector
+must be deleted and re-registered:
+
+```bash
+bash scripts/reload_connectors.sh
+```
+
+The same default catches every Connect-managed topic on a single-broker
+cluster. The worker's own internal topics are already pinned in
+`docker-compose.yml` via `CONNECT_*_STORAGE_REPLICATION_FACTOR`, and the
+pipeline topics via `create_topics.py --replication 1`. The DLQ was the one
+that slipped through, because Connect creates it implicitly.
+
+### Cause B — connection scheme
+
+Symptom: `Unable to retrieve routing table`, `ServiceUnavailableException`.
+
+The shipped configs use `bolt://neo4j:7687`. For a single Community instance
+`neo4j://` normally also works (the server returns a routing table containing
+only itself), so this is rarely the cause — but `bolt://` avoids the routing
+round-trip and is the more precise choice for a non-clustered target.
+
+### Cause C — `__value` is not bound
+
+Symptom: `Variable '__value' not defined`.
+
+The `__header` / `__key` / `__value` bindings were introduced in connector
+**5.1.0**. Older versions expose only `event`. Either upgrade the connector, or
+use the legacy configs:
+
+```bash
+bash scripts/reload_connectors.sh legacy
+```
+
+`src/neo4j/legacy/` contains the same statements written against `event`.
+
+### Cause D — cannot reach Neo4j
+
+Symptom: `Connection refused`, `UnknownHostException`.
+
+The connector runs **inside the Connect container**, so the host is `neo4j`,
+not `localhost`:
+
+```bash
+docker exec connect getent hosts neo4j
+```
+
+### Cause E — authentication
+
+Symptom: `The client is unauthorized due to authentication failure`.
+
+```bash
+docker exec neo4j cypher-shell -u neo4j -p password "RETURN 1"
+```
+
+If that fails, a previous run left an old password in the named volume:
+
+```bash
+docker compose down -v && docker compose up -d
+```
+
+### Cause F — Cypher syntax
+
+Symptom: `Neo.ClientError.Statement.SyntaxError`.
+
+The connector wraps your statement:
+
+```
+UNWIND $events AS message
+WITH message.value AS event, message.key AS __key, message.value AS __value
+<your statement>
+```
+
+Your statement is appended after a `WITH`, so it must be a valid continuation.
+Starting it with `WITH __value AS v` (as the shipped configs do) is the safest
+form — it works whether or not the preceding clause projected what you expect.
+
+### After any fix
+
+```bash
+bash scripts/reload_connectors.sh
+bash scripts/run_pipeline.sh
+```
+
+### Checking what was rejected
+
+With `errors.tolerance: all`, individual bad messages go to a dead letter queue
+instead of killing the task. If the task is running but Neo4j stays empty, look
+there:
+
+```bash
+docker exec broker kafka-console-consumer --bootstrap-server localhost:9092 \
+    --topic cpg.nodes.dlq --from-beginning --max-messages 3 --timeout-ms 8000
+```
+
+---
+
+## 10. Spark dies at startup with `org.apache.hadoop.ipc.Client ... Connection refused`
+
+Symptom — the stack trace ends in Hadoop RPC, not Kafka or Mongo:
+
+```
+at org.apache.spark.sql.streaming.DataStreamWriter.start(...)
+Caused by: java.net.ConnectException: Connection refused
+    at org.apache.hadoop.ipc.Client$Connection.setupConnection(Client.java:711)
+    at org.apache.hadoop.ipc.Client.call(Client.java:1502)
+```
+
+**Cause.** Spark resolves a bare checkpoint path such as `/tmp/chk/cpg_metadata`
+against `fs.defaultFS`. If this machine has Hadoop configured — very likely on a
+Big Data course machine, via `HADOOP_CONF_DIR`, `core-site.xml`, or
+`spark-defaults.conf` — that default is `hdfs://...`, so Spark tries to contact
+a NameNode that is not running. Nothing in this pipeline uses HDFS; the path is
+simply being resolved against the wrong filesystem.
+
+**Fix.** Pin the checkpoint to the local disk with an explicit scheme:
+
+```bash
+--checkpoint file:///tmp/chk/cpg_metadata
+```
+
+`spark_mongo_stream.py` now does this automatically: a bare path is normalised
+to a `file://` URI, and `fs.defaultFS` is overridden to `file:///` unless you
+pass `--use-hadoop-fs`.
+
+**Verify** the job printed its resolved location on startup:
+
+```
+checkpoint location : file:///tmp/chk/cpg_metadata
+```
+
+and that the directory really appears on local disk once a batch commits:
+
+```bash
+ls -R /tmp/chk/cpg_metadata      # commits/ metadata/ offsets/ sources/
+```
+
+**If you genuinely want HDFS** (not required for this lab), start it first and
+pass `--use-hadoop-fs`.
+
+### Related: check your Hadoop environment
+
+```bash
+echo "$HADOOP_CONF_DIR"
+grep -r fs.defaultFS "$HADOOP_CONF_DIR" 2>/dev/null
+cat "$SPARK_HOME/conf/spark-defaults.conf" 2>/dev/null | grep -i defaultFS
+```
+
+Anything pointing at `hdfs://` explains the failure.
+
+---
+
+## 11. Parser crashes at startup: `Unrecognized configs: {'enable_idempotence': True}`
+
+```
+File ".../kafka/producer/kafka.py", line 356, in __init__
+    assert not configs, f'Unrecognized configs: {configs}'
+AssertionError: Unrecognized configs: {'enable_idempotence': True}
+```
+
+**Cause.** On Python 3.12 this lab uses `kafka-python-ng` (see item 1). Its
+`KafkaProducer` does not accept the `enable_idempotence` flag that upstream
+`kafka-python` 2.1+ supports, and it asserts on any unknown config instead of
+ignoring it.
+
+**Fix.** `src/parser/parser_service.py` now tries the flag and falls back to a
+producer with only `acks="all"` when the client rejects it. This is safe: the
+pipeline's idempotency comes from structural ids plus `MERGE`/upsert in the
+sinks, not from producer-level idempotence — a broker-side retry duplicate is
+absorbed exactly like a full replay is.

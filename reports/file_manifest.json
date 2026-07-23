@@ -1,5 +1,5 @@
 {
-  "repo_root": "/home/claude/lab04/optimum",
+  "repo_root": "/home/trong/lab04/optimum",
   "total_py_found": 74,
   "excluded_count": 15,
   "included_count": 59,
@@ -359,8 +359,8 @@
     {
       "file_id": "b3fc55405381fc8a",
       "rel_path": "optimum/version.py",
-      "size_bytes": 644,
-      "content_hash": "ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce"
+      "size_bytes": 751,
+      "content_hash": "f5b8514ad074172d89b9d04fecc61d62654eb7c4b7a5dbe743b46d5eb515c56f"
     }
   ]
 }

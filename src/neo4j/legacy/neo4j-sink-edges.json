@@ -1,32 +1,23 @@
 {
-  "name": "neo4j-sink-cpg-nodes",
+  "name": "neo4j-sink-cpg-edges",
   "config": {
     "connector.class": "org.neo4j.connectors.kafka.sink.Neo4jConnector",
-    "topics": "cpg.nodes",
+    "topics": "cpg.edges",
     "tasks.max": "1",
-
     "key.converter": "org.apache.kafka.connect.storage.StringConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter.schemas.enable": "false",
-
     "neo4j.uri": "bolt://neo4j:7687",
     "neo4j.database": "neo4j",
     "neo4j.authentication.type": "BASIC",
     "neo4j.authentication.basic.username": "neo4j",
     "neo4j.authentication.basic.password": "password",
-
-    "neo4j.cypher.bind-header-as": "",
-    "neo4j.cypher.bind-key-as": "",
-    "neo4j.cypher.bind-value-as": "__value",
-    "neo4j.cypher.bind-value-as-event": "false",
-
     "errors.tolerance": "all",
     "errors.log.enable": "true",
     "errors.log.include.messages": "true",
-    "errors.deadletterqueue.topic.name": "cpg.nodes.dlq",
+    "errors.deadletterqueue.topic.name": "cpg.edges.dlq",
     "errors.deadletterqueue.topic.replication.factor": "1",
     "errors.deadletterqueue.context.headers.enable": "true",
-
-    "neo4j.cypher.topic.cpg.nodes": "WITH __value AS v MERGE (n:CpgNode {id: v.node.id}) SET n.type = v.node.type, n.label = v.node.label, n.code = v.node.code, n.start_line = v.node.start_line, n.end_line = v.node.end_line, n.scope_id = v.node.scope_id, n.file_id = v.file_id, n.rel_path = v.rel_path, n.file_hash = v.file_hash"
+    "neo4j.cypher.topic.cpg.edges": "WITH event AS v MERGE (s:CpgNode {id: v.edge.src_id}) MERGE (d:CpgNode {id: v.edge.dst_id}) MERGE (s)-[r:CPG_EDGE {id: v.edge.id}]->(d) SET r.type = v.edge.type, r.file_id = v.file_id, r.file_hash = v.file_hash"
   }
 }

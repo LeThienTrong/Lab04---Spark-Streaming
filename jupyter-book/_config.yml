@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
 # EDIT THESE THREE LINES BEFORE BUILDING
 title: "Lab 04 - Incremental CPG Streaming Pipeline (huggingface/optimum)"
-author: "Team <YOUR-TEAM-NAME> - <member 1>, <member 2>, <member 3>"
+author: "Team BDS - Lê Thiện Trọng, Hà Công Thuận, Đặng Ngọc Tiên, Nguyễn Tấn Đồng"
 # ---------------------------------------------------------------------------
 
 logo: ""
@@ -20,7 +20,7 @@ html:
 
 repository:
   # EDIT: your team's public repository
-  url: https://github.com/YOUR-TEAM/YOUR-REPO
+  url: https://github.com/LeThienTrong/Lab04---Spark-Streaming
   branch: main
   path_to_book: jupyter-book
 

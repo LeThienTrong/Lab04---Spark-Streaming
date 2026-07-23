@@ -104,7 +104,7 @@ curl -s http://localhost:8083/connectors/neo4j-sink-cpg-nodes/status   # read ta
 spark-submit \
   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.mongodb.spark:mongo-spark-connector_2.12:10.4.0 \
   src/spark/spark_mongo_stream.py --bootstrap localhost:9092 \
-  --mongo-uri mongodb://localhost:27017 --checkpoint /tmp/chk/cpg_metadata
+  --mongo-uri mongodb://localhost:27017 --checkpoint file:///tmp/chk/cpg_metadata
 
 # Task 2 - produce to Kafka
 python src/parser/parser_service.py --manifest reports/file_manifest.json \

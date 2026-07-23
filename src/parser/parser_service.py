@@ -61,13 +61,18 @@ class KafkaSink:
 
     def __init__(self, bootstrap: str):
         from kafka import KafkaProducer  # imported lazily
-        self.p = KafkaProducer(
+        common = dict(
             bootstrap_servers=bootstrap,
             key_serializer=lambda k: k.encode(),
             value_serializer=lambda v: v.encode(),
             acks="all",
-            enable_idempotence=True,
         )
+        try:
+            self.p = KafkaProducer(enable_idempotence=True, **common)
+        except AssertionError:
+            # kafka-python-ng (Python 3.12) rejects enable_idempotence;
+            # pipeline idempotency does not depend on it (structural ids + MERGE)
+            self.p = KafkaProducer(**common)
         self.counts = {t: 0 for t in TOPICS}
 
     def send(self, kind: str, key: str, value: str):

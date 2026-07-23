@@ -24,6 +24,7 @@ org.mongodb.spark:mongo-spark-connector_2.12:10.4.0 \
 from __future__ import annotations
 
 import argparse
+import os
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
@@ -62,6 +63,23 @@ def build_stream(spark, bootstrap: str):
             .filter(F.col("file_id").isNotNull()))
 
 
+def normalize_checkpoint(path: str) -> str:
+    """Force a local-filesystem URI unless the user asked for a real scheme.
+
+    Spark resolves a bare path like /tmp/chk against `fs.defaultFS`. On a
+    machine with Hadoop configured (very common on a Big Data course machine),
+    that is hdfs://..., so Spark tries to reach a NameNode and dies with
+
+        org.apache.hadoop.ipc.Client ... java.net.ConnectException: Connection refused
+
+    even though nothing in this pipeline uses HDFS. Prefixing the path with
+    file:// pins it to the local disk regardless of the Hadoop configuration.
+    """
+    if "://" in path:
+        return path
+    return "file://" + os.path.abspath(path)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--bootstrap", default="localhost:9092")
@@ -69,13 +87,24 @@ def main() -> None:
     ap.add_argument("--database", default="cpg")
     ap.add_argument("--collection", default="file_metadata")
     ap.add_argument("--checkpoint", default="/tmp/chk/cpg_metadata")
+    ap.add_argument("--use-hadoop-fs", action="store_true",
+                    help="do not override fs.defaultFS (only if you really want HDFS)")
     args = ap.parse_args()
 
-    spark = (SparkSession.builder
-             .appName("cpg-metadata-to-mongo")
-             .config("spark.mongodb.write.connection.uri", args.mongo_uri)
-             .getOrCreate())
+    checkpoint = normalize_checkpoint(args.checkpoint)
+
+    builder = (SparkSession.builder
+               .appName("cpg-metadata-to-mongo")
+               .config("spark.mongodb.write.connection.uri", args.mongo_uri))
+    if not args.use_hadoop_fs:
+        # Ignore any HDFS configuration present on this machine.
+        builder = builder.config("spark.hadoop.fs.defaultFS", "file:///")
+    spark = builder.getOrCreate()
     spark.sparkContext.setLogLevel("WARN")
+
+    print(f"checkpoint location : {checkpoint}")
+    print(f"kafka bootstrap     : {args.bootstrap}")
+    print(f"mongo target        : {args.database}.{args.collection}")
 
     meta = build_stream(spark, args.bootstrap)
 
@@ -96,7 +125,7 @@ def main() -> None:
 
     query = (meta.writeStream
              .foreachBatch(upsert_batch)
-             .option("checkpointLocation", args.checkpoint)
+             .option("checkpointLocation", checkpoint)
              .outputMode("append")
              .start())
     query.awaitTermination()

@@ -1,0 +1,17 @@
+# Dependency set for Python 3.12+ (Ubuntu 24.04 default).
+# Difference from requirements.txt: kafka-python is replaced by the maintained
+# fork kafka-python-ng, because kafka-python 2.0.2 fails to import on 3.12
+# with "No module named 'kafka.vendor.six.moves'". The import name is
+# unchanged (`import kafka`), so no source change is needed.
+kafka-python-ng==2.2.3
+jsonschema==4.22.0
+neo4j==5.20.0
+pyspark==3.5.1
+pymongo==4.7.0
+pandas==2.2.2
+jupyter-book==1.0.2
+nbformat==5.10.4
+nbconvert==7.16.4
+ipykernel==6.29.4
+sphinxcontrib-mermaid==0.9.2
+ghp-import==2.1.0
