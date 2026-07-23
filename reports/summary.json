@@ -1,0 +1,15 @@
+{
+  "commit": "a6c775e",
+  "files": 59,
+  "total_loc": 13725,
+  "total_nodes": 58817,
+  "total_edges": 73587,
+  "total_functions": 522,
+  "total_classes": 153,
+  "edge_counts": {
+    "AST": 57760,
+    "CFG": 4987,
+    "DFG": 8259,
+    "CALL": 2581
+  }
+}

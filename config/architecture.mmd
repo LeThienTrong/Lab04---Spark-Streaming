@@ -1,0 +1,25 @@
+flowchart LR
+  subgraph SRC["Assigned repo: huggingface/optimum"]
+    R["59 .py source files"]
+  end
+  R --> DISC["Task1: File Discovery\n(manifest + content_hash)"]
+  DISC --> PS["Task2: Parser Service\n(ast -> CPG, one file at a time,\nSTABLE structural ids)"]
+
+  PS -->|node events| T1["cpg.nodes\n(key=node id, compact)"]
+  PS -->|edge events| T2["cpg.edges\n(key=edge id, compact)"]
+  PS -->|metadata| T3["cpg.metadata\n(key=file id, compact)"]
+  PS -->|errors| T4["cpg.errors"]
+
+  subgraph KAFKA["Task3: Apache Kafka"]
+    T1 & T2 & T3 & T4
+  end
+
+  T1 --> NC["Neo4j Connector for Kafka (Sink)\nCypher MERGE = idempotent"]
+  T2 --> NC
+  NC --> NEO[("Task4: Neo4j\nCpgNode / CPG_EDGE")]
+
+  T3 --> SP["Task5: Spark Structured Streaming\nforeachBatch UPSERT + checkpoint"]
+  SP --> MG[("MongoDB\nfile_metadata")]
+
+  EDIT["Task6: edit 1 file -> replay --only"] -.-> PS
+  NC -.->|generation sweep\nfile_hash != current| NEO

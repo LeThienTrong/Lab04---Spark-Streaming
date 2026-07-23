@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# EDIT THESE THREE LINES BEFORE BUILDING
+title: "Lab 04 - Incremental CPG Streaming Pipeline (huggingface/optimum)"
+author: "Team <YOUR-TEAM-NAME> - <member 1>, <member 2>, <member 3>"
+# ---------------------------------------------------------------------------
+
+logo: ""
+
+execute:
+  # Notebooks were executed locally against the live stack; their committed
+  # outputs are the evidence required by the lab. Do NOT re-execute at build
+  # time (the build machine has no Kafka/Neo4j/Mongo).
+  execute_notebooks: "off"
+
+only_build_toc_files: true
+
+html:
+  use_issues_button: false
+  use_repository_button: true
+
+repository:
+  # EDIT: your team's public repository
+  url: https://github.com/YOUR-TEAM/YOUR-REPO
+  branch: main
+  path_to_book: jupyter-book
+
+parse:
+  myst_enable_extensions:
+    - colon_fence
+    - dollarmath
+
+sphinx:
+  extra_extensions:
+    - sphinxcontrib.mermaid
+  config:
+    html_show_copyright: false

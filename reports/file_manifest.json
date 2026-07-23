@@ -1,0 +1,366 @@
+{
+  "repo_root": "/home/claude/lab04/optimum",
+  "total_py_found": 74,
+  "excluded_count": 15,
+  "included_count": 59,
+  "by_top_level_dir": {
+    "optimum": 58,
+    "docs": 1
+  },
+  "files": [
+    {
+      "file_id": "e874a4257ccdb966",
+      "rel_path": "docs/combine_docs.py",
+      "size_bytes": 7264,
+      "content_hash": "44654054ebb70e05bd2347ed2e38fcd3dd1b203364593391dabc1769ab26f1ee"
+    },
+    {
+      "file_id": "a6e70c5c402cabb9",
+      "rel_path": "optimum/commands/base.py",
+      "size_bytes": 5872,
+      "content_hash": "ac147adc4740303686ba06fbaf2d5b9ff662659c48e8a7e1b1b293a999964f2f"
+    },
+    {
+      "file_id": "02c88dca277a3d84",
+      "rel_path": "optimum/commands/env.py",
+      "size_bytes": 1940,
+      "content_hash": "4bdda03de0436ef31d72ef79b90dc41d5e0d245356a61ab348bf7d661e258bea"
+    },
+    {
+      "file_id": "f1e67e4aff2e07d0",
+      "rel_path": "optimum/commands/export/base.py",
+      "size_bytes": 896,
+      "content_hash": "30c300aa70bdfe0be66fc7f20eff4a3eca127ea55873624ba25ef8f6f63d0b8f"
+    },
+    {
+      "file_id": "2987be2dec9a83cc",
+      "rel_path": "optimum/commands/optimum_cli.py",
+      "size_bytes": 9660,
+      "content_hash": "b71500c4014359ac3afc89326b9d1cecfb1913277231ba8f35a9df43939c83b7"
+    },
+    {
+      "file_id": "ea37ff522acdd7e2",
+      "rel_path": "optimum/configuration_utils.py",
+      "size_bytes": 14235,
+      "content_hash": "f056ef5f188e5b5d60b72b373b0cdfa434e52bddcf547c1842d99b6d6e2290e5"
+    },
+    {
+      "file_id": "9fd2171637c17504",
+      "rel_path": "optimum/exporters/base.py",
+      "size_bytes": 11074,
+      "content_hash": "d64a0dab350c39fa33f3dd4c385941b8aa3f82d5d544fda9fc5495e818b01033"
+    },
+    {
+      "file_id": "698d13a9d0a7ffc2",
+      "rel_path": "optimum/exporters/error_utils.py",
+      "size_bytes": 953,
+      "content_hash": "f835e77c1491f0c9b72db3d18ce58a91318bd0b8a0d34b3433bbfb69c0501247"
+    },
+    {
+      "file_id": "e42de94c77aceaad",
+      "rel_path": "optimum/exporters/tasks.py",
+      "size_bytes": 62283,
+      "content_hash": "a1aec2d5951072c126195c45111c83b3e351d90157efb88c5fe1d324b9503aeb"
+    },
+    {
+      "file_id": "088d8a8bc7ab559c",
+      "rel_path": "optimum/exporters/utils.py",
+      "size_bytes": 27840,
+      "content_hash": "d7264ae12c07f2d6e0855e5412c960af49d69f45e36fa5c2eb17601699362027"
+    },
+    {
+      "file_id": "c33b2edc8f382918",
+      "rel_path": "optimum/fx/__init__.py",
+      "size_bytes": 658,
+      "content_hash": "5c79cde994c8eb7dcf8ef33f35954d10205b47c33a21079d2f12a6d3de1d887c"
+    },
+    {
+      "file_id": "acd7184e8f5dc6c6",
+      "rel_path": "optimum/fx/optimization/__init__.py",
+      "size_bytes": 866,
+      "content_hash": "2f9544823825db3a74b78e403358e58a1a528ba200da50240650f79a19418104"
+    },
+    {
+      "file_id": "170c22175c1073d3",
+      "rel_path": "optimum/fx/optimization/transformations.py",
+      "size_bytes": 33206,
+      "content_hash": "a310bd0dae97fe92725e71fb5edd6f5f4b895834ab41f8d8ee0442f11c2d03b0"
+    },
+    {
+      "file_id": "04906d69ca5a9a71",
+      "rel_path": "optimum/fx/parallelization/__init__.py",
+      "size_bytes": 724,
+      "content_hash": "020269f718c23ee90ee3eff08b9549210f2c78be8b47ea6c877633a7a3b44e65"
+    },
+    {
+      "file_id": "c271fa931dc47d1f",
+      "rel_path": "optimum/fx/parallelization/api.py",
+      "size_bytes": 4787,
+      "content_hash": "d3953fb479d81a1c4b2f0af4891e8d8410c370c1115101b2850c15cb6c14c183"
+    },
+    {
+      "file_id": "17b9214ad5247f67",
+      "rel_path": "optimum/fx/parallelization/core.py",
+      "size_bytes": 6860,
+      "content_hash": "43534d126b7daef9707f3bf230af930a792ba817202ce85eaaccef648037c170"
+    },
+    {
+      "file_id": "39b44a121081f172",
+      "rel_path": "optimum/fx/parallelization/decomp.py",
+      "size_bytes": 9656,
+      "content_hash": "a29298c781bdd93cfead9c4d0d4763a8d8b44dda2a95b2edc9518e83b366818f"
+    },
+    {
+      "file_id": "0b54ea3909190e8a",
+      "rel_path": "optimum/fx/parallelization/distributed/__init__.py",
+      "size_bytes": 783,
+      "content_hash": "d68fa1a5d260b52f08c7c9871d84c62930b538db38031faab4c8425a4c2e659b"
+    },
+    {
+      "file_id": "d889208437772383",
+      "rel_path": "optimum/fx/parallelization/distributed/dist_ops.py",
+      "size_bytes": 5180,
+      "content_hash": "d9a1151e19c5824e014dd6378bfb6f0ce4f2b269389481e2e849b32996d38848"
+    },
+    {
+      "file_id": "4aff4dcc465c4cfb",
+      "rel_path": "optimum/fx/parallelization/op_registry/__init__.py",
+      "size_bytes": 693,
+      "content_hash": "e82d907c2507a6c3bffb0d706c203436bf3527de0ed82e1389ace152ec5b0f14"
+    },
+    {
+      "file_id": "0947f38a1400abf2",
+      "rel_path": "optimum/fx/parallelization/op_registry/op_handlers.py",
+      "size_bytes": 17544,
+      "content_hash": "a7d093552e49a80def542a6a9fe0e94f4bb63d108cd9e6d5fe6547dcc68de09f"
+    },
+    {
+      "file_id": "1fb024133f3bc508",
+      "rel_path": "optimum/fx/parallelization/parallel_layers/__init__.py",
+      "size_bytes": 809,
+      "content_hash": "51f181a98c0c8844a772d29bcf6e90baf67f172d90e210577d2171b7e3b8aeeb"
+    },
+    {
+      "file_id": "9b69c5f8e450138a",
+      "rel_path": "optimum/fx/parallelization/parallel_layers/embedding.py",
+      "size_bytes": 3377,
+      "content_hash": "c2547853a0072c74c96fa460434cc0da74aea251160790680c869a1c939e34ae"
+    },
+    {
+      "file_id": "7954efe98e206431",
+      "rel_path": "optimum/fx/parallelization/parallel_layers/linear.py",
+      "size_bytes": 7087,
+      "content_hash": "4dbc2f6e27263041b95d723143241e2ee9a92236f81b8927f90eab6dc7163e29"
+    },
+    {
+      "file_id": "74dd930b233562d1",
+      "rel_path": "optimum/fx/parallelization/parallel_layers/loss.py",
+      "size_bytes": 6615,
+      "content_hash": "caa0eafd78f05651137752fdb35b698321416c340670be1d7fb58541f31ec141"
+    },
+    {
+      "file_id": "705adc7a0146f19f",
+      "rel_path": "optimum/fx/parallelization/passes.py",
+      "size_bytes": 26019,
+      "content_hash": "dbadba410245884c1da7cb843d6f60d97be8b5df09f4b974f2c7565900eff6e3"
+    },
+    {
+      "file_id": "e053f6234b5cf006",
+      "rel_path": "optimum/fx/parallelization/utils.py",
+      "size_bytes": 18244,
+      "content_hash": "3e12b7b6a1f9c2f3ef6838c18ea4e42a9cc0c30c218974aeec2594dfa75ca8d2"
+    },
+    {
+      "file_id": "ec462d7132c42980",
+      "rel_path": "optimum/fx/utils.py",
+      "size_bytes": 1450,
+      "content_hash": "bb525cade4ed8554b511c91c7b9963ee3117bb2db47d1081f7f275ab4592b5d1"
+    },
+    {
+      "file_id": "1775766c2e8d98b5",
+      "rel_path": "optimum/gptq/__init__.py",
+      "size_bytes": 660,
+      "content_hash": "7df9f08f893362e87255e9dfcadbb81b40f25caad572dd9a6a265466910bc091"
+    },
+    {
+      "file_id": "582fba326ddf9c70",
+      "rel_path": "optimum/gptq/constants.py",
+      "size_bytes": 1014,
+      "content_hash": "5c8e2a3df09168235e801a79031514ffd9ae630aa1e8040401db28a3eaed0b3b"
+    },
+    {
+      "file_id": "2fdae6087eb735c4",
+      "rel_path": "optimum/gptq/data.py",
+      "size_bytes": 9307,
+      "content_hash": "d4221e43f670fa519a8b433f01459cb4a9c7d070139e89412676efbf59284952"
+    },
+    {
+      "file_id": "6e6088caa49f7a66",
+      "rel_path": "optimum/gptq/eval.py",
+      "size_bytes": 1476,
+      "content_hash": "6f2e88bafa1808a539c2186d59a194a66200260a0abd1cdc1e03203c921a28f2"
+    },
+    {
+      "file_id": "9fafcddb4fcdefd2",
+      "rel_path": "optimum/gptq/quantizer.py",
+      "size_bytes": 36825,
+      "content_hash": "f8bda2486ff0ef7d781c243d4493c52f68ec5338970cf1b1c25fc95fa3f332df"
+    },
+    {
+      "file_id": "cd9511fdf7f20122",
+      "rel_path": "optimum/gptq/utils.py",
+      "size_bytes": 4881,
+      "content_hash": "b9061ba3c6fbaa0b6317a5e2423ceb4fa4f3600b1c32dacb7bbf90f2005305fe"
+    },
+    {
+      "file_id": "0feaab53cb3a9f33",
+      "rel_path": "optimum/modeling_base.py",
+      "size_bytes": 16470,
+      "content_hash": "a3297fd2d2862d89ca08f387c323dff062cc11190ab20fc7c17b27089af0b384"
+    },
+    {
+      "file_id": "9cb48f1af8c86bbf",
+      "rel_path": "optimum/pipelines/__init__.py",
+      "size_bytes": 17097,
+      "content_hash": "39f9d5e552af4c4098f1e164e968342904ea882ef19d1fc98cc48150c73866a9"
+    },
+    {
+      "file_id": "9f069352d4570b2a",
+      "rel_path": "optimum/quantization_base.py",
+      "size_bytes": 948,
+      "content_hash": "f46fdc9186f37238d89b1d7664f18308d82f173c6fe4990cfaa2d45ce3196521"
+    },
+    {
+      "file_id": "972f9e81ec269bce",
+      "rel_path": "optimum/runs_base.py",
+      "size_bytes": 10309,
+      "content_hash": "eeed1b7c7ea0a058135c4da75d227f721dd8dae13713c648b8d172325d8f4a2a"
+    },
+    {
+      "file_id": "5465438d9c7cd3d4",
+      "rel_path": "optimum/subpackages.py",
+      "size_bytes": 3075,
+      "content_hash": "b702af5b29ca9d3711a138f21553952becf417411f8b0343d247a61b265dcc80"
+    },
+    {
+      "file_id": "81aeb3d86203e954",
+      "rel_path": "optimum/utils/__init__.py",
+      "size_bytes": 3955,
+      "content_hash": "bae3a31dc5517f37f7fd7bb2233a601ef452e08ae03b915134cfa4c456fe0721"
+    },
+    {
+      "file_id": "b195a357ca362c1f",
+      "rel_path": "optimum/utils/constant.py",
+      "size_bytes": 2093,
+      "content_hash": "54f267aaa594abda6ed5a322e2074258c1905f299d4d37fdc231cfc3c1028735"
+    },
+    {
+      "file_id": "f86392ae247fdbd1",
+      "rel_path": "optimum/utils/doc.py",
+      "size_bytes": 2001,
+      "content_hash": "cff61ce05e935721e17b6aace5954f4da3853c4e4409b9e008da42123b40a076"
+    },
+    {
+      "file_id": "7f7b20a3b5f88ac5",
+      "rel_path": "optimum/utils/file_utils.py",
+      "size_bytes": 3815,
+      "content_hash": "373ddb080055f839370d6ffd15bbc9f205652b872793a5e651a6ef48e5819044"
+    },
+    {
+      "file_id": "683bf017f7dcc7f3",
+      "rel_path": "optimum/utils/import_utils.py",
+      "size_bytes": 11001,
+      "content_hash": "c774780b073cf5383a42907643b7314f2e3de5c522590d54445ad6cbe326b703"
+    },
+    {
+      "file_id": "b2c2e0ad679bee92",
+      "rel_path": "optimum/utils/input_generators.py",
+      "size_bytes": 72172,
+      "content_hash": "83f054da488e23aff61fc7d4d21eca2786eb40d6a43933efddde6299ade3e80c"
+    },
+    {
+      "file_id": "8f1aec4faa80f128",
+      "rel_path": "optimum/utils/logging.py",
+      "size_bytes": 7834,
+      "content_hash": "c9543b3d36d10c1822ea7872c23ae733bdd404d15e98c58b05111b509accf524"
+    },
+    {
+      "file_id": "69590c91ac165105",
+      "rel_path": "optimum/utils/modeling_utils.py",
+      "size_bytes": 1459,
+      "content_hash": "25f156f7f7225220275af8a0a518ba3014e23e369a09e84e12e65f615fc0f408"
+    },
+    {
+      "file_id": "6171cc514f5e84b2",
+      "rel_path": "optimum/utils/normalized_config.py",
+      "size_bytes": 12059,
+      "content_hash": "477a4d7da98f22ca496fb4f496a2b5c9bdc94f56caf05ae1c1f0c8dded044e1e"
+    },
+    {
+      "file_id": "c9ec7b8274336f46",
+      "rel_path": "optimum/utils/preprocessing/__init__.py",
+      "size_bytes": 977,
+      "content_hash": "771218f33a01886802a0db29fef9ad59731bc4a3b87c7dc772f353852add1f5d"
+    },
+    {
+      "file_id": "26b55fbd9c1b2e08",
+      "rel_path": "optimum/utils/preprocessing/base.py",
+      "size_bytes": 10784,
+      "content_hash": "909c9857d6e94067d6e4a954721ed9c2ff551a38f90e819d44882b0aeade525b"
+    },
+    {
+      "file_id": "01d424edf1a24cd1",
+      "rel_path": "optimum/utils/preprocessing/image_classification.py",
+      "size_bytes": 4272,
+      "content_hash": "1edec6e37a355a17bf7eff28c55a8f446996ecdf8259cde2f34eaae094d8d245"
+    },
+    {
+      "file_id": "84b6687f57e1ed43",
+      "rel_path": "optimum/utils/preprocessing/question_answering.py",
+      "size_bytes": 3996,
+      "content_hash": "217af305f9f4086582109a31ab04a503ad1fa47a64a615354e3e80ed5a8b1897"
+    },
+    {
+      "file_id": "4c7bdd1f7c28b9af",
+      "rel_path": "optimum/utils/preprocessing/task_processors_manager.py",
+      "size_bytes": 2178,
+      "content_hash": "b2f1a0828d286dd84cbd483e080731de592da6e01a0a2aaa88fc9cb6904f9a5d"
+    },
+    {
+      "file_id": "8b6aa1238ce3b486",
+      "rel_path": "optimum/utils/preprocessing/text_classification.py",
+      "size_bytes": 4437,
+      "content_hash": "97c7924fb9165ac6ee0a2b942c5f8fb4916450e055b4210acdf2ef39c37532a6"
+    },
+    {
+      "file_id": "dd33b6134b4da58d",
+      "rel_path": "optimum/utils/preprocessing/token_classification.py",
+      "size_bytes": 3941,
+      "content_hash": "f33cffbe16a597bd8f0fd31eed06984fc41913ad83c8c6404fc7fc7c2fbda2d6"
+    },
+    {
+      "file_id": "cdfbc40f28dd6bde",
+      "rel_path": "optimum/utils/runs.py",
+      "size_bytes": 11610,
+      "content_hash": "2b31520f583aef939834e8ec3811bc64acecc12ff72720dc0afe6a84be81c76e"
+    },
+    {
+      "file_id": "850ac04d5797715b",
+      "rel_path": "optimum/utils/save_utils.py",
+      "size_bytes": 3152,
+      "content_hash": "cdf25e0b2ee7dd4c38828ed8fcd0428ee93eee25ff0b6759a91bbe054a0c196a"
+    },
+    {
+      "file_id": "b88ac0e054b56328",
+      "rel_path": "optimum/utils/testing_utils.py",
+      "size_bytes": 7114,
+      "content_hash": "acfe767f1b63325229e707dff83d0b6a37bafb528e26d02cd81374884f70cbc8"
+    },
+    {
+      "file_id": "b3fc55405381fc8a",
+      "rel_path": "optimum/version.py",
+      "size_bytes": 644,
+      "content_hash": "ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce"
+    }
+  ]
+}

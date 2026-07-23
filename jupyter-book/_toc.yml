@@ -1,0 +1,10 @@
+format: jb-book
+root: intro
+chapters:
+  - file: task1_discovery
+  - file: task2_parser
+  - file: task3_kafka
+  - file: task4_neo4j
+  - file: task5_spark_mongo
+  - file: task6_replay
+  - file: architecture
