@@ -2,12 +2,10 @@
 # Deletes and re-registers both Neo4j sink connectors, so a config change takes
 # effect. Kafka Connect does not reload a config on its own.
 #
-#   bash scripts/reload_connectors.sh            # current configs (__value)
-#   bash scripts/reload_connectors.sh legacy     # for connectors older than 5.1.0
+#   bash scripts/reload_connectors.sh
 set -uo pipefail
 
 DIR="src/neo4j"
-[ "${1:-}" = "legacy" ] && DIR="src/neo4j/legacy" && echo "Using LEGACY configs (event binding)"
 
 for NAME in neo4j-sink-cpg-nodes neo4j-sink-cpg-edges; do
   curl -s -X DELETE "http://localhost:8083/connectors/$NAME" >/dev/null 2>&1 \

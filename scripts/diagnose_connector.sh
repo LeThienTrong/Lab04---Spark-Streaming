@@ -99,12 +99,11 @@ if echo "$TRACE" | grep -qiE "Variable .__value. not defined|Unknown variable.*_
     "The __header/__key/__value variables were introduced in connector 5.1.0." \
     "Older versions expose only 'event'." \
     "" \
-    "FIX A (preferred): install connector 5.1.0 or newer:" \
+    "FIX: install connector 5.1.0 or newer:" \
     "    bash scripts/fetch_neo4j_connector.sh" \
     "    docker compose build connect && docker compose up -d connect" \
     "" \
-    "FIX B: use the legacy configs that reference 'event' instead:" \
-    "    bash scripts/reload_connectors.sh legacy"
+    "(Alternatively, rewrite the sink Cypher against 'event' instead of __value.)"
 fi
 
 if echo "$TRACE" | grep -qiE "ConnectException.*Connection refused|ServiceUnavailable.*Connection refused|UnknownHost"; then

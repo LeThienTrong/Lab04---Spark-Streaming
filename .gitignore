@@ -1,6 +1,7 @@
 # The assigned repo is cloned at build time, not committed
 optimum/
 .venv/
+CLAUDE.md
 docker/connect/plugins/*.jar
 __pycache__/
 *.pyc

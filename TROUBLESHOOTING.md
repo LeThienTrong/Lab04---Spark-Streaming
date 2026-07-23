@@ -254,14 +254,10 @@ round-trip and is the more precise choice for a non-clustered target.
 Symptom: `Variable '__value' not defined`.
 
 The `__header` / `__key` / `__value` bindings were introduced in connector
-**5.1.0**. Older versions expose only `event`. Either upgrade the connector, or
-use the legacy configs:
-
-```bash
-bash scripts/reload_connectors.sh legacy
-```
-
-`src/neo4j/legacy/` contains the same statements written against `event`.
+**5.1.0**. Older versions expose only `event`. Upgrade the connector
+(`bash scripts/fetch_neo4j_connector.sh`, then rebuild the connect image); as a
+last resort the sink statements can be rewritten against `event` — the two
+bindings carry the same payload, only the variable name differs.
 
 ### Cause D — cannot reach Neo4j
 
