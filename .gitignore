@@ -1,0 +1,9 @@
+# The assigned repo is cloned at build time, not committed
+optimum/
+docker/connect/plugins/*.jar
+__pycache__/
+*.pyc
+jupyter-book/_build/
+reports/events/cpg.nodes.jsonl
+reports/events/cpg.edges.jsonl
+.ipynb_checkpoints/
