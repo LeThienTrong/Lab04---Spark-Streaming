@@ -1,0 +1,832 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Task 2 — Incremental CPG Parser Service &#8212; Lab 04 - Incremental CPG Streaming Pipeline (huggingface/optimum)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'task2_parser';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Task 3 — Kafka Topic Design" href="task3_kafka.html" />
+    <link rel="prev" title="Task 1 — Repository Cloning &amp; File Discovery" href="task1_discovery.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Lab 04 - Incremental CPG Streaming Pipeline (huggingface/optimum)</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="task1_discovery.html">Task 1 — Repository Cloning &amp; File Discovery</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Task 2 — Incremental CPG Parser Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task3_kafka.html">Task 3 — Kafka Topic Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task4_neo4j.html">Task 4 — Graph Topology Ingestion into Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task5_spark_mongo.html">Task 5 — Source Metadata Ingestion into MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task6_replay.html">Task 6 — Idempotent Replay Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Diagram</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/LeThienTrong/Lab04---Spark-Streaming" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/task2_parser.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Task 2 — Incremental CPG Parser Service</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choice-of-parsing-library">Choice of parsing library</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-extract">What we extract</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-decision-the-whole-lab-rests-on-stable-identifiers">The decision the whole lab rests on: stable identifiers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#demonstrate-the-extractor-on-a-small-synthetic-function">Demonstrate the extractor on a small synthetic function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proof-that-identifiers-are-line-independent">Proof that identifiers are line-independent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-parser-service-over-the-whole-repository-offline-sink">Run the Parser Service over the whole repository (offline sink)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aggregate-statistics-across-all-files">Aggregate statistics across all files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-real-kafka-message-exactly-as-it-will-be-produced">A real Kafka message, exactly as it will be produced</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reflection">Reflection</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="task-2-incremental-cpg-parser-service">
+<h1>Task 2 — Incremental CPG Parser Service<a class="headerlink" href="#task-2-incremental-cpg-parser-service" title="Link to this heading">#</a></h1>
+<section id="approach-and-reasoning">
+<h2>Approach and reasoning<a class="headerlink" href="#approach-and-reasoning" title="Link to this heading">#</a></h2>
+<section id="choice-of-parsing-library">
+<h3>Choice of parsing library<a class="headerlink" href="#choice-of-parsing-library" title="Link to this heading">#</a></h3>
+<p>The lab allows Joern, tree-sitter, or the standard-library <code class="docutils literal notranslate"><span class="pre">ast</span></code> module. We chose
+<strong><code class="docutils literal notranslate"><span class="pre">ast</span></code></strong> deliberately:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Joern</p></th>
+<th class="head"><p>tree-sitter</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">ast</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CPG semantics built in</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-odd"><td><p>Extra runtime (JVM / native grammar)</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+<td><p>no</p></td>
+</tr>
+<tr class="row-even"><td><p>Deterministic across machines</p></td>
+<td><p>version-dependent</p></td>
+<td><p>grammar-dependent</p></td>
+<td><p>tied to the Python version</p></td>
+</tr>
+<tr class="row-odd"><td><p>Control over node identity</p></td>
+<td><p>limited</p></td>
+<td><p>manual</p></td>
+<td><p>full</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Because the grade depends on <strong>reproducible identifiers</strong>, full control over how
+identity is computed mattered more to us than getting CPG semantics for free.
+<code class="docutils literal notranslate"><span class="pre">ast</span></code> gives an exact, documented tree with no external dependency to pin.</p>
+</section>
+<section id="what-we-extract">
+<h3>What we extract<a class="headerlink" href="#what-we-extract" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>AST nodes</strong> and parent→child <strong>AST edges</strong> — the syntactic backbone.</p></li>
+<li><p><strong>CFG edges</strong> — sequential statement flow within a block, plus entry edges into
+<code class="docutils literal notranslate"><span class="pre">if</span></code> / <code class="docutils literal notranslate"><span class="pre">for</span></code> / <code class="docutils literal notranslate"><span class="pre">while</span></code> / <code class="docutils literal notranslate"><span class="pre">try</span></code> / function bodies.</p></li>
+<li><p><strong>DFG edges</strong> — a reaching-definition approximation: a <code class="docutils literal notranslate"><span class="pre">Store</span></code> of a name links
+to later <code class="docutils literal notranslate"><span class="pre">Load</span></code>s of that name in the same scope; parameters count as
+definitions.</p></li>
+<li><p><strong>CALL edges</strong> — each call site to its callee, resolved to a <code class="docutils literal notranslate"><span class="pre">FunctionDef</span></code> in
+the same file when possible, otherwise to a synthetic <code class="docutils literal notranslate"><span class="pre">ExternalSymbol</span></code> node.</p></li>
+</ul>
+<p>CFG and DFG are <strong>intra-procedural approximations</strong>, and we say so explicitly:
+the lab asks us to represent these edge categories, not to reimplement a
+compiler’s dataflow analysis.</p>
+</section>
+<section id="the-decision-the-whole-lab-rests-on-stable-identifiers">
+<h3>The decision the whole lab rests on: stable identifiers<a class="headerlink" href="#the-decision-the-whole-lab-rests-on-stable-identifiers" title="Link to this heading">#</a></h3>
+<p>A naive identifier is <code class="docutils literal notranslate"><span class="pre">hash(file,</span> <span class="pre">line,</span> <span class="pre">column)</span></code>. It is fatal. Insert one blank
+line at the top of a file and every line number below shifts, so every node gets
+a new id on replay and Neo4j fills with duplicates — Task 6 fails.</p>
+<p>Our identifiers are <strong>structural</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">node_id</span> <span class="o">=</span> <span class="n">sha1</span><span class="p">(</span> <span class="n">file_id</span> <span class="o">|</span> <span class="n">structural_path</span> <span class="p">)</span>
+<span class="n">structural_path</span> <span class="o">=</span> <span class="n">chain</span> <span class="n">of</span> <span class="p">(</span><span class="n">ast_type</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">sibling_index</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">root</span>
+</pre></div>
+</div>
+<p>Line and column are still emitted, but only as <em>properties</em>, never as identity.
+Every element additionally carries the file’s sha256 as <code class="docutils literal notranslate"><span class="pre">file_hash</span></code>, which acts
+as a <strong>generation marker</strong> for the stale-node sweep in Task 6.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;src/parser&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cwd:&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>cwd: /home/trong/lab04
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="demonstrate-the-extractor-on-a-small-synthetic-function">
+<h3>Demonstrate the extractor on a small synthetic function<a class="headerlink" href="#demonstrate-the-extractor-on-a-small-synthetic-function" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cpg</span><span class="w"> </span><span class="kn">import</span> <span class="n">extract_cpg</span>
+
+<span class="n">demo</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">def add(a, b):</span>
+<span class="s1">    total = a + b</span>
+<span class="s1">    return total</span>
+
+<span class="s1">def main():</span>
+<span class="s1">    x = add(1, 2)</span>
+<span class="s1">    print(x)</span>
+<span class="s1">&#39;&#39;&#39;</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">extract_cpg</span><span class="p">(</span><span class="s2">&quot;demo.py&quot;</span><span class="p">,</span> <span class="n">demo</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;nodes:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="s2">&quot; edges:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;edge types:&quot;</span><span class="p">,</span> <span class="n">Counter</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nodes: 34  edges: 43
+edge types: Counter({&#39;AST&#39;: 32, &#39;CFG&#39;: 5, &#39;DFG&#39;: 4, &#39;CALL&#39;: 2})
+</pre></div>
+</div>
+</div>
+</div>
+<p>Look at the actual CALL and DFG edges the extractor found:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CALL&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CALL  -&gt;&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;callee&quot;</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">edges</span><span class="p">[:</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[]:</span>
+    <span class="k">pass</span>
+<span class="n">dfg</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">edges</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;DFG&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">DFG edges (def -&gt; use), first 5:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">dfg</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  variable&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;var&quot;</span><span class="p">],</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;src_id&quot;</span><span class="p">][:</span><span class="mi">8</span><span class="p">],</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;dst_id&quot;</span><span class="p">][:</span><span class="mi">8</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CALL  -&gt; add
+CALL  -&gt; print
+
+DFG edges (def -&gt; use), first 5:
+  variable a : e909c1de -&gt; e2c3cb72
+  variable b : 12bd428a -&gt; 3e443051
+  variable total : 45ce00a0 -&gt; 64e5ad34
+  variable x : 47df68be -&gt; 2358d161
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="proof-that-identifiers-are-line-independent">
+<h3>Proof that identifiers are line-independent<a class="headerlink" href="#proof-that-identifiers-are-line-independent" title="Link to this heading">#</a></h3>
+<p>This is the single most important cell in the notebook. We prepend a comment
+line to the source — shifting every line number — and check that the node
+identifiers are unchanged.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shifted</span> <span class="o">=</span> <span class="s2">&quot;# a comment inserted at the top</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">demo</span>
+<span class="n">res2</span> <span class="o">=</span> <span class="n">extract_cpg</span><span class="p">(</span><span class="s2">&quot;demo.py&quot;</span><span class="p">,</span> <span class="n">shifted</span><span class="p">)</span>
+
+<span class="n">ids1</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+<span class="n">ids2</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">res2</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;node ids before :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;node ids after  :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;identical       :&quot;</span><span class="p">,</span> <span class="n">ids1</span> <span class="o">==</span> <span class="n">ids2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;line numbers changed:&quot;</span><span class="p">,</span>
+      <span class="n">res</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="s2">&quot;start_line&quot;</span><span class="p">],</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">res2</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="s2">&quot;start_line&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>node ids before : 34
+node ids after  : 34
+identical       : True
+line numbers changed: 2 -&gt; 3
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="run-the-parser-service-over-the-whole-repository-offline-sink">
+<h3>Run the Parser Service over the whole repository (offline sink)<a class="headerlink" href="#run-the-parser-service-over-the-whole-repository-offline-sink" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>src/parser/parser_service.py<span class="w"> </span>--manifest<span class="w"> </span>reports/file_manifest.json<span class="w"> </span><span class="err">\</span>
+    <span class="o">--</span><span class="n">repo</span> <span class="o">./</span><span class="n">optimum</span> <span class="o">--</span><span class="n">offline</span> <span class="o">--</span><span class="n">outdir</span> <span class="n">reports</span><span class="o">/</span><span class="n">events</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 10/59 files
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 20/59 files
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 30/59 files
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 40/59 files
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 50/59 files
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 59/59 files
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Event counts: {&#39;node&#39;: 58831, &#39;edge&#39;: 73606, &#39;metadata&#39;: 59, &#39;error&#39;: 0}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="aggregate-statistics-across-all-files">
+<h3>Aggregate statistics across all files<a class="headerlink" href="#aggregate-statistics-across-all-files" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">l</span><span class="p">)[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;reports/events/cpg.metadata.jsonl&quot;</span><span class="p">)]</span>
+<span class="n">ec</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="n">ec</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;edge_counts&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;files parsed   :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lines of code  :&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CPG nodes      :&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;num_ast_nodes&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CPG edges      :&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;num_edges&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;functions      :&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;num_functions&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;classes        :&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;num_classes&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;edge breakdown :&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ec</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>files parsed   : 59
+lines of code  : 13730
+CPG nodes      : 58831
+CPG edges      : 73606
+functions      : 523
+classes        : 153
+edge breakdown : {&#39;AST&#39;: 57774, &#39;CFG&#39;: 4990, &#39;DFG&#39;: 8261, &#39;CALL&#39;: 2581}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="a-real-kafka-message-exactly-as-it-will-be-produced">
+<h3>A real Kafka message, exactly as it will be produced<a class="headerlink" href="#a-real-kafka-message-exactly-as-it-will-be-produced" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="n">sample</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;reports/events/samples/cpg.nodes.sample.jsonl&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)[:</span><span class="mi">900</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+  &quot;key&quot;: &quot;b295fb53090cf376624df61f&quot;,
+  &quot;value&quot;: {
+    &quot;schema_version&quot;: &quot;1.0.0&quot;,
+    &quot;event_type&quot;: &quot;node&quot;,
+    &quot;event_time&quot;: &quot;2026-07-22T18:18:45.020019+00:00&quot;,
+    &quot;file_id&quot;: &quot;e874a4257ccdb966&quot;,
+    &quot;rel_path&quot;: &quot;docs/combine_docs.py&quot;,
+    &quot;file_hash&quot;: &quot;44654054ebb70e05bd2347ed2e38fcd3dd1b203364593391dabc1769ab26f1ee&quot;,
+    &quot;node&quot;: {
+      &quot;id&quot;: &quot;b295fb53090cf376624df61f&quot;,
+      &quot;type&quot;: &quot;Module&quot;,
+      &quot;label&quot;: &quot;&quot;,
+      &quot;code&quot;: &quot;&quot;,
+      &quot;start_line&quot;: null,
+      &quot;end_line&quot;: null,
+      &quot;scope_id&quot;: &quot;b295fb53090cf376624df61f&quot;
+    }
+  }
+}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="reflection">
+<h2>Reflection<a class="headerlink" href="#reflection" title="Link to this heading">#</a></h2>
+<p><strong>What failed.</strong> Our first DFG implementation produced <strong>zero</strong> edges. The bug:
+we collected the stable node id at one point but then looked it up again in a
+map keyed by Python object id, so every lookup missed. The fix was to store the
+stable id directly at collection time. After the fix the same repository yielded
+8,258 DFG edges. This is exactly the class of bug that a “the code runs, so it
+works” check misses — the pipeline was green while producing an incomplete graph.</p>
+<p><strong>What worked.</strong> Deriving identity from tree structure instead of position. The
+cell above proves it: shifting every line in the file left all node identifiers
+untouched.</p>
+<p><strong>Known limitation.</strong> DFG is scope-based, not path-sensitive: a variable
+reassigned inside an <code class="docutils literal notranslate"><span class="pre">if</span></code> branch links from both definitions to every later use.
+Making it path-sensitive would require building a proper CFG-dominator analysis,
+which is beyond this lab’s scope.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="task1_discovery.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Task 1 — Repository Cloning &amp; File Discovery</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="task3_kafka.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Task 3 — Kafka Topic Design</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choice-of-parsing-library">Choice of parsing library</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-extract">What we extract</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-decision-the-whole-lab-rests-on-stable-identifiers">The decision the whole lab rests on: stable identifiers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#demonstrate-the-extractor-on-a-small-synthetic-function">Demonstrate the extractor on a small synthetic function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proof-that-identifiers-are-line-independent">Proof that identifiers are line-independent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-parser-service-over-the-whole-repository-offline-sink">Run the Parser Service over the whole repository (offline sink)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aggregate-statistics-across-all-files">Aggregate statistics across all files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-real-kafka-message-exactly-as-it-will-be-produced">A real Kafka message, exactly as it will be produced</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reflection">Reflection</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Team BDS - Lê Thiện Trọng, Hà Công Thuận, Đặng Ngọc Tiên, Nguyễn Tấn Đồng
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

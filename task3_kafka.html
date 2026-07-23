@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Task 3 — Kafka Topic Design &#8212; Lab 04 - Incremental CPG Streaming Pipeline (huggingface/optimum)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'task3_kafka';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Task 4 — Graph Topology Ingestion into Neo4j" href="task4_neo4j.html" />
+    <link rel="prev" title="Task 2 — Incremental CPG Parser Service" href="task2_parser.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Lab 04 - Incremental CPG Streaming Pipeline (huggingface/optimum)</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="task1_discovery.html">Task 1 — Repository Cloning &amp; File Discovery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task2_parser.html">Task 2 — Incremental CPG Parser Service</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Task 3 — Kafka Topic Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task4_neo4j.html">Task 4 — Graph Topology Ingestion into Neo4j</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task5_spark_mongo.html">Task 5 — Source Metadata Ingestion into MongoDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task6_replay.html">Task 6 — Idempotent Replay Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Diagram</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/LeThienTrong/Lab04---Spark-Streaming" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/task3_kafka.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Task 3 — Kafka Topic Design</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-key-is-the-stable-element-id">Why the key is the stable element id</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#message-envelope">Message envelope</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validate-a-real-produced-event-against-its-schema">Validate a real produced event against its schema</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-topics-on-the-live-cluster">Create the topics on the live cluster</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confirm-the-topics-exist-and-inspect-their-configuration">Confirm the topics exist and inspect their configuration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-live-messages-from-the-topic-after-the-parser-has-run">Sample live messages from the topic (after the parser has run)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reflection">Reflection</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="task-3-kafka-topic-design">
+<h1>Task 3 — Kafka Topic Design<a class="headerlink" href="#task-3-kafka-topic-design" title="Link to this heading">#</a></h1>
+<section id="approach-and-reasoning">
+<h2>Approach and reasoning<a class="headerlink" href="#approach-and-reasoning" title="Link to this heading">#</a></h2>
+<p>Four topics carry the four event categories required by the lab:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Topic</p></th>
+<th class="head"><p>Message key</p></th>
+<th class="head"><p>Partitions</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">cleanup.policy</span></code></p></th>
+<th class="head"><p>Rationale</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cpg.nodes</span></code></p></td>
+<td><p>node id</p></td>
+<td><p>6</p></td>
+<td><p>compact</p></td>
+<td><p>high volume, parallel sink consumption</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cpg.edges</span></code></p></td>
+<td><p>edge id</p></td>
+<td><p>6</p></td>
+<td><p>compact</p></td>
+<td><p>high volume</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cpg.metadata</span></code></p></td>
+<td><p>file id</p></td>
+<td><p>1</p></td>
+<td><p>compact</p></td>
+<td><p>one message per file, ordering trivial</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cpg.errors</span></code></p></td>
+<td><p>file id</p></td>
+<td><p>1</p></td>
+<td><p>delete, 7 days</p></td>
+<td><p>diagnostics, not state</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="why-the-key-is-the-stable-element-id">
+<h3>Why the key is the stable element id<a class="headerlink" href="#why-the-key-is-the-stable-element-id" title="Link to this heading">#</a></h3>
+<p>Keying by the element’s stable id gives us three properties at once:</p>
+<ol class="arabic simple">
+<li><p><strong>Ordering</strong> — all versions of one element hash to the same partition, so a
+later version can never be overtaken by an earlier one.</p></li>
+<li><p><strong>Compaction safety</strong> — with <code class="docutils literal notranslate"><span class="pre">cleanup.policy=compact</span></code>, Kafka retains only the
+latest value per key. The topic therefore tracks the <em>current</em> graph rather
+than the cumulative event history, and its size stays bounded across replays.</p></li>
+<li><p><strong>Alignment with the sink</strong> — compaction semantics (“latest per key wins”)
+mirror the <code class="docutils literal notranslate"><span class="pre">MERGE</span></code> semantics used in Neo4j, so the two layers agree.</p></li>
+</ol>
+</section>
+<section id="message-envelope">
+<h3>Message envelope<a class="headerlink" href="#message-envelope" title="Link to this heading">#</a></h3>
+<p>Every message carries <code class="docutils literal notranslate"><span class="pre">schema_version</span></code> (forward compatibility, required by the
+lab) and <code class="docutils literal notranslate"><span class="pre">event_time</span></code> as ISO-8601 UTC (required by the lab), plus <code class="docutils literal notranslate"><span class="pre">file_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">file_hash</span></code> so downstream consumers can perform generation-based cleanup.</p>
+<p>The four contracts are formalised as JSON Schema in <code class="docutils literal notranslate"><span class="pre">schemas/</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">json</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;schemas/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_event.schema.json&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">9</span><span class="si">}</span><span class="s2"> required: </span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;required&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>node      required: [&#39;schema_version&#39;, &#39;event_type&#39;, &#39;event_time&#39;, &#39;file_id&#39;, &#39;file_hash&#39;, &#39;node&#39;]
+edge      required: [&#39;schema_version&#39;, &#39;event_type&#39;, &#39;event_time&#39;, &#39;file_id&#39;, &#39;file_hash&#39;, &#39;edge&#39;]
+metadata  required: [&#39;schema_version&#39;, &#39;event_type&#39;, &#39;event_time&#39;, &#39;file_id&#39;, &#39;file_hash&#39;, &#39;rel_path&#39;]
+error     required: [&#39;schema_version&#39;, &#39;event_type&#39;, &#39;event_time&#39;, &#39;file_id&#39;, &#39;rel_path&#39;, &#39;error_type&#39;, &#39;message&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="validate-a-real-produced-event-against-its-schema">
+<h3>Validate a real produced event against its schema<a class="headerlink" href="#validate-a-real-produced-event-against-its-schema" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span><span class="o">,</span><span class="w"> </span><span class="nn">jsonschema</span>
+<span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;schemas/node_event.schema.json&quot;</span><span class="p">))</span>
+<span class="n">event</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;reports/events/samples/cpg.nodes.sample.jsonl&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readline</span><span class="p">())[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+<span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;node event VALID against schema&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;schema_version:&quot;</span><span class="p">,</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;schema_version&quot;</span><span class="p">],</span> <span class="s2">&quot;| event_time:&quot;</span><span class="p">,</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;event_time&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>node event VALID against schema
+schema_version: 1.0.0 | event_time: 2026-07-22T18:18:45.020019+00:00
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-the-topics-on-the-live-cluster">
+<h3>Create the topics on the live cluster<a class="headerlink" href="#create-the-topics-on-the-live-cluster" title="Link to this heading">#</a></h3>
+<blockquote>
+<div><p><strong>Run this cell against the running Docker stack.</strong> It requires
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span> <span class="pre">-d</span></code> to have completed and the broker healthcheck to pass.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>src/kafka_setup/create_topics.py<span class="w"> </span>--bootstrap<span class="w"> </span>localhost:9092
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>skip     cpg.nodes: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.nodes&#39;, num_partitions=6, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;compact&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.nodes&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.nodes&#39; already exists.&quot;)])&#39;.
+skip     cpg.edges: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.edges&#39;, num_partitions=6, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;compact&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.edges&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.edges&#39; already exists.&quot;)])&#39;.
+skip     cpg.metadata: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.metadata&#39;, num_partitions=1, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;compact&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.metadata&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.metadata&#39; already exists.&quot;)])&#39;.
+skip     cpg.errors: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.errors&#39;, num_partitions=1, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;delete&#39;), (config_key=&#39;retention.ms&#39;, config_value=&#39;604800000&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.errors&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.errors&#39; already exists.&quot;)])&#39;.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="confirm-the-topics-exist-and-inspect-their-configuration">
+<h3>Confirm the topics exist and inspect their configuration<a class="headerlink" href="#confirm-the-topics-exist-and-inspect-their-configuration" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--list
+<span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--describe<span class="w"> </span>--topic<span class="w"> </span>cpg.nodes
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>__consumer_offsets
+_connect-configs
+_connect-offsets
+_connect-status
+cpg.edges
+cpg.edges.dlq
+cpg.errors
+cpg.metadata
+cpg.nodes
+cpg.nodes.dlq
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Topic: cpg.nodes	TopicId: HG_5LQ7CSQi1vSnYDhXyiA	PartitionCount: 6	ReplicationFactor: 1	Configs: cleanup.policy=compact
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>	Topic: cpg.nodes	Partition: 0	Leader: 1	Replicas: 1	Isr: 1
+	Topic: cpg.nodes	Partition: 1	Leader: 1	Replicas: 1	Isr: 1
+	Topic: cpg.nodes	Partition: 2	Leader: 1	Replicas: 1	Isr: 1
+	Topic: cpg.nodes	Partition: 3	Leader: 1	Replicas: 1	Isr: 1
+	Topic: cpg.nodes	Partition: 4	Leader: 1	Replicas: 1	Isr: 1
+	Topic: cpg.nodes	Partition: 5	Leader: 1	Replicas: 1	Isr: 1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="sample-live-messages-from-the-topic-after-the-parser-has-run">
+<h3>Sample live messages from the topic (after the parser has run)<a class="headerlink" href="#sample-live-messages-from-the-topic-after-the-parser-has-run" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-console-consumer<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span><span class="err">\</span>
+    <span class="o">--</span><span class="n">topic</span> <span class="n">cpg</span><span class="o">.</span><span class="n">nodes</span> <span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">beginning</span> <span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">messages</span> <span class="mi">2</span> <span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ms</span> <span class="mi">10000</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&quot;schema_version&quot;: &quot;1.0.0&quot;, &quot;event_type&quot;: &quot;node&quot;, &quot;event_time&quot;: &quot;2026-07-23T07:10:51.618848+00:00&quot;, &quot;file_id&quot;: &quot;e874a4257ccdb966&quot;, &quot;rel_path&quot;: &quot;docs/combine_docs.py&quot;, &quot;file_hash&quot;: &quot;44654054ebb70e05bd2347ed2e38fcd3dd1b203364593391dabc1769ab26f1ee&quot;, &quot;node&quot;: {&quot;id&quot;: &quot;a4b38595cc807f1713da5b9a&quot;, &quot;type&quot;: &quot;Import&quot;, &quot;label&quot;: &quot;&quot;, &quot;code&quot;: &quot;import yaml&quot;, &quot;start_line&quot;: 6, &quot;end_line&quot;: 6, &quot;scope_id&quot;: &quot;b295fb53090cf376624df61f&quot;}}
+{&quot;schema_version&quot;: &quot;1.0.0&quot;, &quot;event_type&quot;: &quot;node&quot;, &quot;event_time&quot;: &quot;2026-07-23T07:10:51.618944+00:00&quot;, &quot;file_id&quot;: &quot;e874a4257ccdb966&quot;, &quot;rel_path&quot;: &quot;docs/combine_docs.py&quot;, &quot;file_hash&quot;: &quot;44654054ebb70e05bd2347ed2e38fcd3dd1b203364593391dabc1769ab26f1ee&quot;, &quot;node&quot;: {&quot;id&quot;: &quot;3661af8ff9fd7b10ae1814ab&quot;, &quot;type&quot;: &quot;alias&quot;, &quot;label&quot;: &quot;yaml&quot;, &quot;code&quot;: &quot;import yaml&quot;, &quot;start_line&quot;: 6, &quot;end_line&quot;: 6, &quot;scope_id&quot;: &quot;b295fb53090cf376624df61f&quot;}}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processed a total of 2 messages
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="reflection">
+<h2>Reflection<a class="headerlink" href="#reflection" title="Link to this heading">#</a></h2>
+<p><strong>What failed on this machine.</strong> The parser crashed at producer construction with
+<code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">Unrecognized</span> <span class="pre">configs:</span> <span class="pre">{'enable_idempotence':</span> <span class="pre">True}</span></code>. On
+Python 3.12 this project uses <code class="docutils literal notranslate"><span class="pre">kafka-python-ng</span></code> 2.2.3 (upstream <code class="docutils literal notranslate"><span class="pre">kafka-python</span></code>
+does not import on 3.12), and that fork rejects the <code class="docutils literal notranslate"><span class="pre">enable_idempotence</span></code> flag
+instead of ignoring it. The fix in <code class="docutils literal notranslate"><span class="pre">parser_service.py</span></code> tries the flag and falls
+back to a plain <code class="docutils literal notranslate"><span class="pre">acks=&quot;all&quot;</span></code> producer. This is safe here: the pipeline’s
+idempotency comes from structural ids plus <code class="docutils literal notranslate"><span class="pre">MERGE</span></code>/upsert in the sinks, so a
+broker-side retry duplicate is absorbed exactly like a full replay
+(TROUBLESHOOTING.md §11).</p>
+<p><strong>What worked.</strong> Topic creation is idempotent — re-running the pipeline hit
+<code class="docutils literal notranslate"><span class="pre">TopicAlreadyExistsError</span></code> on all four topics and skipped them cleanly. Log
+compaction was the non-obvious win: because keys are stable ids, a replayed file
+overwrites its own messages instead of appending, so topic size tracks the
+current graph rather than growing with every replay.</p>
+<p><strong>What to watch.</strong> Partition count is a one-way door in Kafka — increasing it
+later re-hashes keys and breaks per-element ordering. We picked 6 for the
+high-volume topics up front rather than starting at 1.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="task2_parser.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Task 2 — Incremental CPG Parser Service</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="task4_neo4j.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Task 4 — Graph Topology Ingestion into Neo4j</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-key-is-the-stable-element-id">Why the key is the stable element id</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#message-envelope">Message envelope</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validate-a-real-produced-event-against-its-schema">Validate a real produced event against its schema</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-topics-on-the-live-cluster">Create the topics on the live cluster</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confirm-the-topics-exist-and-inspect-their-configuration">Confirm the topics exist and inspect their configuration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-live-messages-from-the-topic-after-the-parser-has-run">Sample live messages from the topic (after the parser has run)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reflection">Reflection</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Team BDS - Lê Thiện Trọng, Hà Công Thuận, Đặng Ngọc Tiên, Nguyễn Tấn Đồng
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
