@@ -1,0 +1,12 @@
+{
+  "rel_path": "optimum/version.py",
+  "file_id": "b3fc55405381fc8a",
+  "file_hash": "ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce",
+  "nodes": 5,
+  "edges": 4,
+  "stale_nodes": 0,
+  "stale_edges": 0,
+  "duplicate_nodes": 0,
+  "duplicate_edges": 0,
+  "dry_run": false
+}

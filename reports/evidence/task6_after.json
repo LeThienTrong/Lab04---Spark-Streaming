@@ -1,0 +1,21 @@
+{
+  "rel_path": "optimum/version.py",
+  "file_id": "b3fc55405381fc8a",
+  "file_hash_on_disk": "e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5",
+  "nodes_file": 19,
+  "edges_file": 23,
+  "nodes_total": 58831,
+  "edges_total": 73606,
+  "duplicate_nodes": 0,
+  "duplicate_edges": 0,
+  "stale_nodes": 0,
+  "stale_edges": 0,
+  "mongo_document": {
+    "_id": "6a61bedeea4dfbfb3c244a8a",
+    "file_hash": "e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5",
+    "num_ast_nodes": 19,
+    "rel_path": "optimum/version.py"
+  },
+  "mongo_count_for_file": 1,
+  "mongo_total_documents": 59
+}

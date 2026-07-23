@@ -1,0 +1,346 @@
+26/07/23 07:12:10 WARN Utils: Your hostname, TrongPu resolves to a loopback address: 127.0.1.1; using 10.255.255.254 instead (on interface lo)
+26/07/23 07:12:10 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+:: loading settings :: url = jar:file:/home/trong/lab04/.venv/lib/python3.12/site-packages/pyspark/jars/ivy-2.5.1.jar!/org/apache/ivy/core/settings/ivysettings.xml
+Ivy Default Cache set to: /home/trong/.ivy2/cache
+The jars for the packages stored in: /home/trong/.ivy2/jars
+org.apache.spark#spark-sql-kafka-0-10_2.12 added as a dependency
+org.mongodb.spark#mongo-spark-connector_2.12 added as a dependency
+:: resolving dependencies :: org.apache.spark#spark-submit-parent-cae71a17-418f-481d-8de4-8dcbfbc939bb;1.0
+	confs: [default]
+	found org.apache.spark#spark-sql-kafka-0-10_2.12;3.5.1 in central
+	found org.apache.spark#spark-token-provider-kafka-0-10_2.12;3.5.1 in central
+	found org.apache.kafka#kafka-clients;3.4.1 in central
+	found org.lz4#lz4-java;1.8.0 in central
+	found org.xerial.snappy#snappy-java;1.1.10.3 in central
+	found org.slf4j#slf4j-api;2.0.7 in central
+	found org.apache.hadoop#hadoop-client-runtime;3.3.4 in central
+	found org.apache.hadoop#hadoop-client-api;3.3.4 in central
+	found commons-logging#commons-logging;1.1.3 in central
+	found com.google.code.findbugs#jsr305;3.0.0 in central
+	found org.apache.commons#commons-pool2;2.11.1 in central
+	found org.mongodb.spark#mongo-spark-connector_2.12;10.4.0 in central
+	found org.mongodb#mongodb-driver-sync;5.1.4 in central
+	[5.1.4] org.mongodb#mongodb-driver-sync;[5.1.1,5.1.99)
+	found org.mongodb#bson;5.1.4 in central
+	found org.mongodb#mongodb-driver-core;5.1.4 in central
+	found org.mongodb#bson-record-codec;5.1.4 in central
+:: resolution report :: resolve 3860ms :: artifacts dl 34ms
+	:: modules in use:
+	com.google.code.findbugs#jsr305;3.0.0 from central in [default]
+	commons-logging#commons-logging;1.1.3 from central in [default]
+	org.apache.commons#commons-pool2;2.11.1 from central in [default]
+	org.apache.hadoop#hadoop-client-api;3.3.4 from central in [default]
+	org.apache.hadoop#hadoop-client-runtime;3.3.4 from central in [default]
+	org.apache.kafka#kafka-clients;3.4.1 from central in [default]
+	org.apache.spark#spark-sql-kafka-0-10_2.12;3.5.1 from central in [default]
+	org.apache.spark#spark-token-provider-kafka-0-10_2.12;3.5.1 from central in [default]
+	org.lz4#lz4-java;1.8.0 from central in [default]
+	org.mongodb#bson;5.1.4 from central in [default]
+	org.mongodb#bson-record-codec;5.1.4 from central in [default]
+	org.mongodb#mongodb-driver-core;5.1.4 from central in [default]
+	org.mongodb#mongodb-driver-sync;5.1.4 from central in [default]
+	org.mongodb.spark#mongo-spark-connector_2.12;10.4.0 from central in [default]
+	org.slf4j#slf4j-api;2.0.7 from central in [default]
+	org.xerial.snappy#snappy-java;1.1.10.3 from central in [default]
+	---------------------------------------------------------------------
+	|                  |            modules            ||   artifacts   |
+	|       conf       | number| search|dwnlded|evicted|| number|dwnlded|
+	---------------------------------------------------------------------
+	|      default     |   16  |   1   |   0   |   0   ||   16  |   0   |
+	---------------------------------------------------------------------
+:: retrieving :: org.apache.spark#spark-submit-parent-cae71a17-418f-481d-8de4-8dcbfbc939bb
+	confs: [default]
+	0 artifacts copied, 16 already retrieved (0kB/15ms)
+26/07/23 07:12:15 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/07/23 07:12:16 INFO SparkContext: Running Spark version 3.5.1
+26/07/23 07:12:16 INFO SparkContext: OS info Linux, 5.15.167.4-microsoft-standard-WSL2, amd64
+26/07/23 07:12:16 INFO SparkContext: Java version 17.0.19
+26/07/23 07:12:16 INFO ResourceUtils: ==============================================================
+26/07/23 07:12:16 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/07/23 07:12:16 INFO ResourceUtils: ==============================================================
+26/07/23 07:12:16 INFO SparkContext: Submitted application: cpg-metadata-to-mongo
+26/07/23 07:12:16 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/07/23 07:12:16 INFO ResourceProfile: Limiting resource is cpu
+26/07/23 07:12:16 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/07/23 07:12:16 INFO SecurityManager: Changing view acls to: trong
+26/07/23 07:12:16 INFO SecurityManager: Changing modify acls to: trong
+26/07/23 07:12:16 INFO SecurityManager: Changing view acls groups to: 
+26/07/23 07:12:16 INFO SecurityManager: Changing modify acls groups to: 
+26/07/23 07:12:16 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: trong; groups with view permissions: EMPTY; users with modify permissions: trong; groups with modify permissions: EMPTY
+26/07/23 07:12:17 INFO Utils: Successfully started service 'sparkDriver' on port 32989.
+26/07/23 07:12:17 INFO SparkEnv: Registering MapOutputTracker
+26/07/23 07:12:17 INFO SparkEnv: Registering BlockManagerMaster
+26/07/23 07:12:17 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/07/23 07:12:17 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/07/23 07:12:17 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/07/23 07:12:17 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-641fe958-3ab7-42b3-9e97-703717f4f9cd
+26/07/23 07:12:17 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+26/07/23 07:12:17 INFO SparkEnv: Registering OutputCommitCoordinator
+26/07/23 07:12:17 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/07/23 07:12:17 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar at spark://10.255.255.254:32989/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar at spark://10.255.255.254:32989/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar at spark://10.255.255.254:32989/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.apache.kafka_kafka-clients-3.4.1.jar at spark://10.255.255.254:32989/jars/org.apache.kafka_kafka-clients-3.4.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://10.255.255.254:32989/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.apache.commons_commons-pool2-2.11.1.jar at spark://10.255.255.254:32989/jars/org.apache.commons_commons-pool2-2.11.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar at spark://10.255.255.254:32989/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.lz4_lz4-java-1.8.0.jar at spark://10.255.255.254:32989/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar at spark://10.255.255.254:32989/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.slf4j_slf4j-api-2.0.7.jar at spark://10.255.255.254:32989/jars/org.slf4j_slf4j-api-2.0.7.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar at spark://10.255.255.254:32989/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/commons-logging_commons-logging-1.1.3.jar at spark://10.255.255.254:32989/jars/commons-logging_commons-logging-1.1.3.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar at spark://10.255.255.254:32989/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.mongodb_bson-5.1.4.jar at spark://10.255.255.254:32989/jars/org.mongodb_bson-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-core-5.1.4.jar at spark://10.255.255.254:32989/jars/org.mongodb_mongodb-driver-core-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added JAR file:///home/trong/.ivy2/jars/org.mongodb_bson-record-codec-5.1.4.jar at spark://10.255.255.254:32989/jars/org.mongodb_bson-record-codec-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar at file:///home/trong/.ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar at file:///home/trong/.ivy2/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar at file:///home/trong/.ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.apache.kafka_kafka-clients-3.4.1.jar at file:///home/trong/.ivy2/jars/org.apache.kafka_kafka-clients-3.4.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.apache.kafka_kafka-clients-3.4.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.kafka_kafka-clients-3.4.1.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar at file:///home/trong/.ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/com.google.code.findbugs_jsr305-3.0.0.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.apache.commons_commons-pool2-2.11.1.jar at file:///home/trong/.ivy2/jars/org.apache.commons_commons-pool2-2.11.1.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.apache.commons_commons-pool2-2.11.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.commons_commons-pool2-2.11.1.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar at file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.lz4_lz4-java-1.8.0.jar at file:///home/trong/.ivy2/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.lz4_lz4-java-1.8.0.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.lz4_lz4-java-1.8.0.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar at file:///home/trong/.ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.xerial.snappy_snappy-java-1.1.10.3.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.slf4j_slf4j-api-2.0.7.jar at file:///home/trong/.ivy2/jars/org.slf4j_slf4j-api-2.0.7.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.slf4j_slf4j-api-2.0.7.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.slf4j_slf4j-api-2.0.7.jar
+26/07/23 07:12:17 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar at file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:17 INFO Utils: Copying /home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-api-3.3.4.jar
+26/07/23 07:12:18 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/commons-logging_commons-logging-1.1.3.jar at file:///home/trong/.ivy2/jars/commons-logging_commons-logging-1.1.3.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Copying /home/trong/.ivy2/jars/commons-logging_commons-logging-1.1.3.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/commons-logging_commons-logging-1.1.3.jar
+26/07/23 07:12:18 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar at file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Copying /home/trong/.ivy2/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-sync-5.1.4.jar
+26/07/23 07:12:18 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.mongodb_bson-5.1.4.jar at file:///home/trong/.ivy2/jars/org.mongodb_bson-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Copying /home/trong/.ivy2/jars/org.mongodb_bson-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-5.1.4.jar
+26/07/23 07:12:18 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-core-5.1.4.jar at file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-core-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Copying /home/trong/.ivy2/jars/org.mongodb_mongodb-driver-core-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-core-5.1.4.jar
+26/07/23 07:12:18 INFO SparkContext: Added file file:///home/trong/.ivy2/jars/org.mongodb_bson-record-codec-5.1.4.jar at file:///home/trong/.ivy2/jars/org.mongodb_bson-record-codec-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Copying /home/trong/.ivy2/jars/org.mongodb_bson-record-codec-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-record-codec-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Starting executor ID driver on host 10.255.255.254
+26/07/23 07:12:18 INFO Executor: OS info Linux, 5.15.167.4-microsoft-standard-WSL2, amd64
+26/07/23 07:12:18 INFO Executor: Java version 17.0.19
+26/07/23 07:12:18 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/07/23 07:12:18 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@1735f518 for default.
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/com.google.code.findbugs_jsr305-3.0.0.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/com.google.code.findbugs_jsr305-3.0.0.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.mongodb_bson-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.mongodb_bson-5.1.4.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.lz4_lz4-java-1.8.0.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.lz4_lz4-java-1.8.0.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/commons-logging_commons-logging-1.1.3.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/commons-logging_commons-logging-1.1.3.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/commons-logging_commons-logging-1.1.3.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.mongodb_bson-record-codec-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.mongodb_bson-record-codec-5.1.4.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-record-codec-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.apache.kafka_kafka-clients-3.4.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.apache.kafka_kafka-clients-3.4.1.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.kafka_kafka-clients-3.4.1.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.xerial.snappy_snappy-java-1.1.10.3.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-sync-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.slf4j_slf4j-api-2.0.7.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.slf4j_slf4j-api-2.0.7.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.slf4j_slf4j-api-2.0.7.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.mongodb_mongodb-driver-core-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.mongodb_mongodb-driver-core-5.1.4.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-core-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-api-3.3.4.jar
+26/07/23 07:12:18 INFO Executor: Fetching file:///home/trong/.ivy2/jars/org.apache.commons_commons-pool2-2.11.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: /home/trong/.ivy2/jars/org.apache.commons_commons-pool2-2.11.1.jar has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.commons_commons-pool2-2.11.1.jar
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.mongodb_mongodb-driver-core-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO TransportClientFactory: Successfully created connection to /10.255.255.254:32989 after 27 ms (0 ms spent in bootstraps)
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.mongodb_mongodb-driver-core-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp11593004887224029802.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp11593004887224029802.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-core-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-core-5.1.4.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.mongodb_bson-record-codec-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.mongodb_bson-record-codec-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp7228445230711264614.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp7228445230711264614.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-record-codec-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-record-codec-5.1.4.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/commons-logging_commons-logging-1.1.3.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/commons-logging_commons-logging-1.1.3.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp12547859765090618780.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp12547859765090618780.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/commons-logging_commons-logging-1.1.3.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/commons-logging_commons-logging-1.1.3.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp1950354273085375791.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp1950354273085375791.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-runtime-3.3.4.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.mongodb_bson-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.mongodb_bson-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp1727356650660057631.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp1727356650660057631.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_bson-5.1.4.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.mongodb_mongodb-driver-sync-5.1.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp2132101265460616938.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp2132101265460616938.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-sync-5.1.4.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb_mongodb-driver-sync-5.1.4.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.lz4_lz4-java-1.8.0.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp4520836832096434742.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp4520836832096434742.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.lz4_lz4-java-1.8.0.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.lz4_lz4-java-1.8.0.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.slf4j_slf4j-api-2.0.7.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.slf4j_slf4j-api-2.0.7.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp16377487067370179381.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp16377487067370179381.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.slf4j_slf4j-api-2.0.7.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.slf4j_slf4j-api-2.0.7.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp5370971007793367579.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp5370971007793367579.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-sql-kafka-0-10_2.12-3.5.1.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.xerial.snappy_snappy-java-1.1.10.3.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp14928547244887709057.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp14928547244887709057.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.xerial.snappy_snappy-java-1.1.10.3.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.xerial.snappy_snappy-java-1.1.10.3.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.apache.kafka_kafka-clients-3.4.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.apache.kafka_kafka-clients-3.4.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp3708598825638511425.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp3708598825638511425.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.kafka_kafka-clients-3.4.1.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.kafka_kafka-clients-3.4.1.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.apache.hadoop_hadoop-client-api-3.3.4.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp1678145405917323525.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp1678145405917323525.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-api-3.3.4.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.hadoop_hadoop-client-api-3.3.4.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.apache.commons_commons-pool2-2.11.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.apache.commons_commons-pool2-2.11.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp8428156128864650586.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp8428156128864650586.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.commons_commons-pool2-2.11.1.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.commons_commons-pool2-2.11.1.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp14988119115894278050.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp14988119115894278050.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/com.google.code.findbugs_jsr305-3.0.0.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/com.google.code.findbugs_jsr305-3.0.0.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp9383549338721591461.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp9383549338721591461.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.apache.spark_spark-token-provider-kafka-0-10_2.12-3.5.1.jar to class loader default
+26/07/23 07:12:18 INFO Executor: Fetching spark://10.255.255.254:32989/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar with timestamp 1784790736794
+26/07/23 07:12:18 INFO Utils: Fetching spark://10.255.255.254:32989/jars/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp381685169038073000.tmp
+26/07/23 07:12:18 INFO Utils: /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/fetchFileTemp381685169038073000.tmp has been previously copied to /tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar
+26/07/23 07:12:18 INFO Executor: Adding file:/tmp/spark-c36ca7f3-6444-4247-a507-20495d1d33bd/userFiles-ad050f18-6770-429a-bdc7-aaabf33a4e7e/org.mongodb.spark_mongo-spark-connector_2.12-10.4.0.jar to class loader default
+26/07/23 07:12:18 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 42045.
+26/07/23 07:12:18 INFO NettyBlockTransferService: Server created on 10.255.255.254:42045
+26/07/23 07:12:18 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/07/23 07:12:18 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.255.255.254, 42045, None)
+26/07/23 07:12:18 INFO BlockManagerMasterEndpoint: Registering block manager 10.255.255.254:42045 with 434.4 MiB RAM, BlockManagerId(driver, 10.255.255.254, 42045, None)
+26/07/23 07:12:18 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.255.255.254, 42045, None)
+26/07/23 07:12:18 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.255.255.254, 42045, None)
+checkpoint location : file:///tmp/chk/cpg_metadata
+kafka bootstrap     : localhost:9092
+mongo target        : cpg.file_metadata
+26/07/23 07:12:22 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.
+26/07/23 07:12:22 WARN AdminClientConfig: These configurations '[key.deserializer, value.deserializer, enable.auto.commit, max.poll.records, auto.offset.reset]' were supplied but are not used yet.
+26/07/23 07:12:25 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 07:12:25 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 07:12:25 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 0: upserted 59 metadata docs
+26/07/23 07:18:18 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 07:18:18 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 07:18:18 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 1: upserted 1 metadata docs
+26/07/23 08:00:27 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:27 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:27 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 2: upserted 2 metadata docs
+26/07/23 08:00:28 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:28 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:28 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 3: upserted 6 metadata docs
+26/07/23 08:00:29 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:29 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:29 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 4: upserted 1 metadata docs
+26/07/23 08:00:30 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:30 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:30 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 5: upserted 3 metadata docs
+26/07/23 08:00:31 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:31 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:31 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 6: upserted 1 metadata docs
+26/07/23 08:00:32 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:32 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:32 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 7: upserted 3 metadata docs
+26/07/23 08:00:33 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:33 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:33 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 8: upserted 4 metadata docs
+26/07/23 08:00:34 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:34 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:34 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 9: upserted 2 metadata docs
+26/07/23 08:00:34 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:34 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:34 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 10: upserted 2 metadata docs
+26/07/23 08:00:35 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:35 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:35 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 11: upserted 1 metadata docs
+26/07/23 08:00:35 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:35 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:35 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 12: upserted 1 metadata docs
+26/07/23 08:00:36 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:36 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:36 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 13: upserted 4 metadata docs
+26/07/23 08:00:36 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:36 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:36 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 14: upserted 2 metadata docs
+26/07/23 08:00:38 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:38 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:38 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 15: upserted 1 metadata docs
+26/07/23 08:00:38 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:38 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:38 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 16: upserted 2 metadata docs
+26/07/23 08:00:39 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:39 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:39 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 17: upserted 5 metadata docs
+26/07/23 08:00:40 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:40 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:40 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 18: upserted 4 metadata docs
+26/07/23 08:00:42 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:42 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:42 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 19: upserted 1 metadata docs
+26/07/23 08:00:42 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:42 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:42 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 20: upserted 4 metadata docs
+26/07/23 08:00:43 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:43 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:43 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 21: upserted 2 metadata docs
+26/07/23 08:00:43 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:43 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:43 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 22: upserted 3 metadata docs
+26/07/23 08:00:44 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:44 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:44 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 23: upserted 3 metadata docs
+26/07/23 08:00:45 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:00:45 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:00:45 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 24: upserted 2 metadata docs
+26/07/23 08:01:00 WARN CaseInsensitiveStringMap: Converting duplicated key idfieldlist into CaseInsensitiveStringMap.
+26/07/23 08:01:00 WARN CaseInsensitiveStringMap: Converting duplicated key upsertDocument into CaseInsensitiveStringMap.
+26/07/23 08:01:00 WARN CaseInsensitiveStringMap: Converting duplicated key operationType into CaseInsensitiveStringMap.
+batch 25: upserted 1 metadata docs
