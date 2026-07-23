@@ -8,6 +8,18 @@ Connector) and **MongoDB** (source metadata, via Spark Structured Streaming).
 > Ubuntu with a checkpoint after each phase. This file is the reference; the
 > runbook is the sequence.
 
+**Team BDS** — Lê Thiện Trọng, Hà Công Thuận, Đặng Ngọc Tiên, Nguyễn Tấn Đồng.
+
+**Published Jupyter Book (the submission):**
+<https://lethientrong.github.io/Lab04---Spark-Streaming/>
+
+**Assigned repository:** [`huggingface/optimum`](https://github.com/huggingface/optimum)
+(cloned at build time into `./optimum/`, not committed).
+
+**Stack:** Python 3.12 · Apache Kafka (KRaft, 1 broker) · Kafka Connect +
+Neo4j Connector for Kafka 5.1.x · Neo4j 5 · Apache Spark 3.5.1 (Structured
+Streaming) · MongoDB 7 · Docker Compose · Jupyter Book 1.x.
+
 ---
 
 ## Repository layout
@@ -41,9 +53,13 @@ scripts/
     fetch_neo4j_connector.sh    downloads the Neo4j connector JAR
     healthcheck.sh              pre-flight check for the whole stack
     run_pipeline.sh             runs Tasks 1-5 in order, guarded
+    reset_replay_target.py      Task 6: idempotent baseline reset / marker add
+    replay_evidence.py          Task 6: before/after state snapshots (JSON)
     make_notebooks.py           regenerates the chapters
     commit_by_task.sh           creates an incremental commit history
 reports/                      run artifacts (manifest, events, summary)
+    evidence/                   Task 6 evidence: before/after/verification
+                                JSONs, captured Spark log, connector status
 ```
 
 ---
@@ -111,30 +127,40 @@ python src/parser/parser_service.py --manifest reports/file_manifest.json \
     --repo ./optimum --bootstrap localhost:9092
 ```
 
-### Phase 3 — Idempotent replay (Task 6)
+### Phase 3 — Idempotent replay (Task 6, deterministic)
+
+The replay is scripted so it can be re-run any number of times and always
+produce the same before/after numbers:
 
 ```bash
-# 1. edit one file, e.g. append a function to optimum/optimum/version.py
-# 2. refresh the manifest so the new content hash is recorded
+# 0. reset the target to a clean baseline (idempotent), sync the databases
+python scripts/reset_replay_target.py
 python src/discovery/discover_files.py --repo ./optimum --out reports/file_manifest.json
-# 3. reprocess that file only
 python src/parser/parser_service.py --manifest reports/file_manifest.json \
     --repo ./optimum --only optimum/version.py --bootstrap localhost:9092
-# 4. remove elements left behind by the edit
 python src/replay/sweep.py --repo ./optimum --rel-path optimum/version.py
+
+# 1. record the BEFORE state as evidence
+python scripts/replay_evidence.py --out reports/evidence/task6_before.json
+
+# 2. apply the lab edit exactly once (idempotent - never double-applies)
+python scripts/reset_replay_target.py --add-marker
+
+# 3. refresh the manifest, reprocess that ONE file
+python src/discovery/discover_files.py --repo ./optimum --out reports/file_manifest.json
+python src/parser/parser_service.py --manifest reports/file_manifest.json \
+    --repo ./optimum --only optimum/version.py --bootstrap localhost:9092
+
+# 4. sweep stale elements (relationships first, then nodes) and record AFTER
+python src/replay/sweep.py --repo ./optimum --rel-path optimum/version.py \
+    --json-out reports/evidence/task6_sweep.json
+python scripts/replay_evidence.py --out reports/evidence/task6_after.json
 ```
 
-Verification — all three must pass:
-
-```bash
-# Neo4j: must return ZERO rows
-docker exec neo4j cypher-shell -u neo4j -p password \
-  "MATCH (n:CpgNode) WITH n.id AS id, count(*) AS c WHERE c > 1 RETURN id, c"
-# MongoDB: must return exactly 1
-docker exec mongodb mongosh --quiet cpg --eval \
-  "db.file_metadata.countDocuments({rel_path:'optimum/version.py'})"
-# Spark: the replay batch log must show 1 document, not 59
-```
+The Task 6 notebook runs this same flow and computes a machine-checked verdict
+(`reports/evidence/task6_verification.json`); every condition — changed file
+hash, changed node/edge counts, stable Mongo `_id`, zero duplicate and stale
+nodes *and* edges, a 1-document Spark replay batch — must hold for `PASS`.
 
 ### Phase 4 — Build and publish the book
 
@@ -169,18 +195,29 @@ python src/replay/verify_replay.py ./optimum      # prints RESULT: PASS
 
 ## Results from our run (commit `a6c775e`)
 
-| Metric | Value |
-|---|---|
-| Python files discovered / after exclusions | 74 / 59 |
-| Lines of code parsed | 13,725 |
-| CPG nodes / edges | 58,817 / 73,587 |
-| AST / DFG / CFG / CALL edges | 57,760 / 8,259 / 4,987 / 2,581 |
-| Functions / classes | 522 / 153 |
-| Parse errors | 0 |
-| Replay verification | `RESULT: PASS` |
+Two states exist by design. **Baseline** is the upstream tree as cloned.
+**After replay** is the state once Task 6 has added the `_lab_replay_marker`
+function (plus a line-shifting header comment) to `optimum/version.py` and
+reprocessed that one file — that is the whole point of the replay
+demonstration, and it accounts for every difference between the columns.
 
-Counts differ slightly against a newer upstream commit; the hash is printed by
-the first cell of Task 1, so every number is traceable to a specific tree.
+| Metric | Baseline | After replay |
+|---|---:|---:|
+| Python files (discovered / parsed) | 74 / 59 | 74 / 59 |
+| Lines of code parsed | 13,725 | 13,731 |
+| CPG nodes | 58,817 | 58,831 |
+| CPG edges | 73,587 | 73,606 |
+| — AST / DFG / CFG / CALL | 57,760 / 8,259 / 4,987 / 2,581 | 57,774 / 8,261 / 4,990 / 2,581 |
+| Functions / classes | 522 / 153 | 523 / 153 |
+| Parse errors | 0 | 0 |
+| Duplicate node / edge ids | 0 / 0 | 0 / 0 |
+| Replay verification | — | `RESULT: PASS` |
+
+Machine-readable evidence for the replay lives in `reports/evidence/`
+(`task6_before.json`, `task6_after.json`, `task6_verification.json`, the
+captured `spark_stream.log`). Counts differ slightly against a newer upstream
+commit; the hash is printed by the first cell of Task 1, so every number is
+traceable to a specific tree.
 
 ---
 
@@ -206,3 +243,22 @@ sweep is scoped by `file_id` and cannot affect another file's subgraph.
 flow plus branch entry; DFG is scope-based reaching definitions without path
 sensitivity. The lab asks us to represent these edge categories, not to
 reimplement a compiler's dataflow analysis.
+
+---
+
+## Known limitations
+
+- **Single-broker Kafka.** Replication factor is 1 everywhere (including the
+  Connect DLQ topics, which must be pinned explicitly — see
+  `TROUBLESHOOTING.md` §9). Fine for a lab, not a production posture.
+- **CFG/DFG approximations** as described above; CALL edges resolve
+  intra-module names, not dynamic dispatch.
+- **The sweep is a separate step**, not part of the connector: a Cypher sink
+  statement cannot know when a file is "complete", so stale-generation cleanup
+  runs after the sink has drained.
+- **Producer-level idempotence is disabled** on Python 3.12: `kafka-python-ng`
+  rejects `enable_idempotence` (`TROUBLESHOOTING.md` §11). Pipeline
+  idempotency does not depend on it — structural ids plus `MERGE`/upsert
+  absorb broker-side retries the same way they absorb full replays.
+- **Low-RAM machines** (< 8 GB) should start the Spark job after the Neo4j
+  ingestion finishes; the checkpoint makes the late start lossless.

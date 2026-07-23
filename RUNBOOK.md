@@ -170,9 +170,12 @@ Each needs `source .venv/bin/activate`.
 spark-submit \
   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.mongodb.spark:mongo-spark-connector_2.12:10.4.0 \
   src/spark/spark_mongo_stream.py --bootstrap localhost:9092 \
-  --mongo-uri mongodb://localhost:27017 --checkpoint file:///tmp/chk/cpg_metadata
+  --mongo-uri mongodb://localhost:27017 --checkpoint file:///tmp/chk/cpg_metadata \
+  2>&1 | tee -a reports/evidence/spark_stream.log
 ```
 
+The `tee` matters: the captured stdout (checkpoint location, `batch N:
+upserted X` lines) is the evidence the Task 5 and Task 6 notebooks read back.
 The first run downloads several hundred MB of jars — this is normal and only
 happens once. Leave it running and printing batch logs.
 
@@ -211,33 +214,46 @@ within a minute.
 
 # PHASE 4 — Idempotent replay, Task 6 (30 minutes)
 
-This is where the marks are won or lost, so do it deliberately.
+This is where the marks are won or lost, so do it deliberately. The whole
+phase is deterministic: every step is idempotent, so it can be re-run any
+number of times and always converges to the same before/after numbers.
+Evidence snapshots land in `reports/evidence/`.
 
-## 4.1 Record the "before" state — in terminal C
-
-```bash
-docker exec neo4j cypher-shell -u neo4j -p password \
-  "MATCH (n:CpgNode {rel_path:'optimum/version.py'}) RETURN count(n) AS before"
-docker exec mongodb mongosh --quiet cpg --eval \
-  "db.file_metadata.countDocuments({rel_path:'optimum/version.py'})"
-```
-
-**Screenshot this.** It is your before/after evidence.
-
-## 4.2 Modify one file
+## 4.0 Reset the target to a clean baseline
 
 ```bash
-cat >> optimum/optimum/version.py <<'EOF'
-
-def _lab_replay_marker(x):
-    y = x + 1
-    return y
-EOF
-sed -i '1i # lab04 replay edit: shifts every line number below' optimum/optimum/version.py
+python scripts/reset_replay_target.py        # strips the lab edit (idempotent)
+python src/discovery/discover_files.py --repo ./optimum --out reports/file_manifest.json
+python src/parser/parser_service.py --manifest reports/file_manifest.json \
+    --repo ./optimum --only optimum/version.py --bootstrap localhost:9092
+python src/replay/sweep.py --repo ./optimum --rel-path optimum/version.py
 ```
 
-The `sed` line is the point: it shifts every line number in the file. A
-line-based identifier scheme would now duplicate the entire file.
+If a previous replay left the marker in the file, this is also the deletion
+demo: the sweep removes the whole stale generation — **relationships first,
+then nodes** (a stale edge between two surviving nodes would outlive a
+node-only sweep).
+
+## 4.1 Record the "before" state
+
+```bash
+python scripts/replay_evidence.py --out reports/evidence/task6_before.json
+```
+
+One JSON with per-file node/edge counts, DB totals, duplicate + stale counts
+for nodes **and** edges, and the Mongo document. **Screenshot the Neo4j
+Browser counts too** — that is your GUI evidence.
+
+## 4.2 Modify one file — exactly once
+
+```bash
+python scripts/reset_replay_target.py --add-marker
+```
+
+Adds a header comment that **shifts every line number** plus a
+`_lab_replay_marker` function at EOF. Idempotent: run it twice, the file is
+identical — the marker can never be applied twice. A line-based identifier
+scheme would duplicate the entire file on the next step.
 
 ## 4.3 Refresh the manifest, reprocess only that file
 
@@ -247,45 +263,54 @@ python src/parser/parser_service.py --manifest reports/file_manifest.json \
     --repo ./optimum --only optimum/version.py --bootstrap localhost:9092
 ```
 
-## 4.4 Sweep the stale nodes
+Must print `processed 1/1 files` with `'metadata': 1` — the other 58 files are
+not re-emitted.
+
+## 4.4 Sweep stale elements, record the "after" state
 
 ```bash
-python src/replay/sweep.py --repo ./optimum --rel-path optimum/version.py --dry-run
-python src/replay/sweep.py --repo ./optimum --rel-path optimum/version.py
+python src/replay/sweep.py --repo ./optimum --rel-path optimum/version.py \
+    --json-out reports/evidence/task6_sweep.json
+python scripts/replay_evidence.py --out reports/evidence/task6_after.json
 ```
 
 `MERGE` updates elements that are re-emitted. It cannot touch elements that
-**stopped** being emitted — an edit that deletes a function leaves orphans. The
-sweep deletes elements of that one file whose generation marker (`file_hash`) is
-stale.
+**stopped** being emitted — the sweep deletes elements of that one file whose
+generation marker (`file_hash`) is stale, edges before nodes.
 
 ## 4.5 Verify all three systems
 
+The Task 6 notebook computes the verdict from the two evidence files
+(`reports/evidence/task6_verification.json`). Manual spot-checks:
+
 ```bash
-# Neo4j: file updated, and NO duplicates anywhere
-docker exec neo4j cypher-shell -u neo4j -p password \
-  "MATCH (n:CpgNode {rel_path:'optimum/version.py'}) RETURN count(n) AS after"
+# Neo4j: no duplicate nodes AND no duplicate edges anywhere
 docker exec neo4j cypher-shell -u neo4j -p password \
   "MATCH (n:CpgNode) WITH n.id AS id, count(*) AS c WHERE c > 1 RETURN id, c"
+docker exec neo4j cypher-shell -u neo4j -p password \
+  "MATCH ()-[r:CPG_EDGE]->() WITH r.id AS id, count(*) AS c WHERE c > 1 RETURN id, c"
 
-# MongoDB: still exactly ONE document, with the new hash
-docker exec mongodb mongosh --quiet cpg --eval \
-  "db.file_metadata.countDocuments({rel_path:'optimum/version.py'})"
+# MongoDB: still exactly ONE document, same _id, new hash
 docker exec mongodb mongosh --quiet cpg --eval \
   "printjson(db.file_metadata.findOne({rel_path:'optimum/version.py'},{rel_path:1,file_hash:1,num_ast_nodes:1}))"
 ```
 
-In terminal B, the Spark log must show the replay batch containing **1**
-document, not 59. That is your checkpoint evidence — Spark resumed from the
-committed offset and read only the new message.
+The Spark log (`reports/evidence/spark_stream.log`) must show the replay batch
+containing **1** document, and after a restart no batch that re-reads
+committed offsets.
 
 ## ✅ Checkpoint 4
 
 | Check | Required |
 |---|---|
-| Neo4j duplicate query | **zero rows** |
-| Mongo document count for the file | **exactly 1** |
+| `task6_verification.json` status | **PASS** |
+| file_hash before ≠ after | yes |
+| Neo4j node/edge count for the file | changed (5/4 → 19/23 on our commit) |
+| Duplicate nodes / duplicate edges | **0 / 0** |
+| Stale nodes / stale edges after sweep | **0 / 0** |
+| Mongo `_id` | unchanged, hash updated, count 1 |
 | Spark replay batch | **1 doc**, not 59 |
+| Spark restart | no re-read of committed offsets |
 
 Also run the source-level proof, which needs no infrastructure:
 
