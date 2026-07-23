@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "cpg.metadata message value (-> MongoDB)",
+  "type": "object",
+  "required": ["schema_version", "event_type", "event_time", "file_id", "file_hash", "rel_path"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "event_type": {"const": "metadata"},
+    "event_time": {"type": "string", "format": "date-time"},
+    "file_id": {"type": "string"},
+    "rel_path": {"type": "string"},
+    "file_hash": {"type": "string"},
+    "loc": {"type": "integer"},
+    "num_ast_nodes": {"type": "integer"},
+    "num_edges": {"type": "integer"},
+    "edge_counts": {"type": "object"},
+    "num_functions": {"type": "integer"},
+    "num_classes": {"type": "integer"},
+    "imports": {"type": "array", "items": {"type": "string"}}
+  }
+}

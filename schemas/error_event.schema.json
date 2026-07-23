@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "cpg.errors message value",
+  "type": "object",
+  "required": ["schema_version", "event_type", "event_time", "file_id", "rel_path", "error_type", "message"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "event_type": {"const": "error"},
+    "event_time": {"type": "string", "format": "date-time"},
+    "file_id": {"type": "string"},
+    "rel_path": {"type": "string"},
+    "error_type": {"type": "string"},
+    "message": {"type": "string"}
+  }
+}

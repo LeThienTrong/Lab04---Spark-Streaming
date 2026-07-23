@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "cpg.nodes message value",
+  "type": "object",
+  "required": ["schema_version", "event_type", "event_time", "file_id", "file_hash", "node"],
+  "properties": {
+    "schema_version": {"type": "string", "examples": ["1.0.0"]},
+    "event_type": {"const": "node"},
+    "event_time": {"type": "string", "format": "date-time"},
+    "file_id": {"type": "string"},
+    "rel_path": {"type": "string"},
+    "file_hash": {"type": "string", "description": "sha256 of file; generation marker"},
+    "node": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {"type": "string", "description": "stable structural id"},
+        "type": {"type": "string", "description": "AST node type e.g. FunctionDef"},
+        "label": {"type": "string"},
+        "code": {"type": "string"},
+        "start_line": {"type": ["integer", "null"]},
+        "end_line": {"type": ["integer", "null"]},
+        "scope_id": {"type": "string"}
+      }
+    }
+  }
+}

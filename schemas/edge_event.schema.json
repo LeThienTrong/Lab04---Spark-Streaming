@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "cpg.edges message value",
+  "type": "object",
+  "required": ["schema_version", "event_type", "event_time", "file_id", "file_hash", "edge"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "event_type": {"const": "edge"},
+    "event_time": {"type": "string", "format": "date-time"},
+    "file_id": {"type": "string"},
+    "file_hash": {"type": "string"},
+    "edge": {
+      "type": "object",
+      "required": ["id", "type", "src_id", "dst_id"],
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"enum": ["AST", "CFG", "DFG", "CALL"]},
+        "src_id": {"type": "string"},
+        "dst_id": {"type": "string"},
+        "field": {"type": "string"},
+        "kind": {"type": "string"},
+        "var": {"type": "string"},
+        "callee": {"type": "string"}
+      }
+    }
+  }
+}
