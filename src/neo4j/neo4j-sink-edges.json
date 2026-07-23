@@ -1,0 +1,18 @@
+{
+  "name": "neo4j-sink-cpg-edges",
+  "config": {
+    "connector.class": "org.neo4j.connectors.kafka.sink.Neo4jConnector",
+    "topics": "cpg.edges",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": false,
+    "neo4j.uri": "neo4j://neo4j:7687",
+    "neo4j.authentication.type": "BASIC",
+    "neo4j.authentication.basic.username": "neo4j",
+    "neo4j.authentication.basic.password": "password",
+    "errors.tolerance": "all",
+    "errors.log.enable": true,
+    "errors.deadletterqueue.topic.name": "cpg.edges.dlq",
+    "neo4j.cypher.topic.cpg.edges": "MERGE (s:CpgNode {id: __value.edge.src_id}) MERGE (d:CpgNode {id: __value.edge.dst_id}) MERGE (s)-[r:CPG_EDGE {id: __value.edge.id}]->(d) SET r.type = __value.edge.type, r.file_id = __value.file_id, r.file_hash = __value.file_hash"
+  }
+}

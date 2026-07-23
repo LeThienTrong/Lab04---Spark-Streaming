@@ -1,0 +1,18 @@
+{
+  "name": "neo4j-sink-cpg-nodes",
+  "config": {
+    "connector.class": "org.neo4j.connectors.kafka.sink.Neo4jConnector",
+    "topics": "cpg.nodes",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": false,
+    "neo4j.uri": "neo4j://neo4j:7687",
+    "neo4j.authentication.type": "BASIC",
+    "neo4j.authentication.basic.username": "neo4j",
+    "neo4j.authentication.basic.password": "password",
+    "errors.tolerance": "all",
+    "errors.log.enable": true,
+    "errors.deadletterqueue.topic.name": "cpg.nodes.dlq",
+    "neo4j.cypher.topic.cpg.nodes": "MERGE (n:CpgNode {id: __value.node.id}) SET n.type = __value.node.type, n.label = __value.node.label, n.code = __value.node.code, n.start_line = __value.node.start_line, n.end_line = __value.node.end_line, n.scope_id = __value.node.scope_id, n.file_id = __value.file_id, n.rel_path = __value.rel_path, n.file_hash = __value.file_hash"
+  }
+}
