@@ -47,10 +47,15 @@ def main() -> None:
                  replication_factor=args.replication, topic_configs=cfg)
         for name, parts, cfg in TOPIC_SPECS
     ]
+    from kafka.errors import TopicAlreadyExistsError
+
     for t in topics:
         try:
             admin.create_topics([t])
             print(f"created  {t.name}  partitions={t.num_partitions}")
+        except TopicAlreadyExistsError:
+            # idempotent re-run: the topic is already there with its config
+            print(f"exists   {t.name}  (already created, skipping)")
         except Exception as exc:  # noqa: BLE001
             print(f"skip     {t.name}: {exc}")
     admin.close()
