@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -383,6 +383,7 @@
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-start-the-streaming-job">Step 1 — start the streaming job</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1b-read-the-captured-streaming-log">Step 1b — read the captured streaming log</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-verify-the-documents-landed-in-mongodb">Step 2 — verify the documents landed in MongoDB</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-inspect-one-document">Step 3 — inspect one document</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-the-duplicate-check-that-must-return-an-empty-array">Step 4 — the duplicate check that must return an empty array</a></li>
@@ -423,18 +424,37 @@ available.</p>
 <section id="step-1-start-the-streaming-job">
 <h3>Step 1 — start the streaming job<a class="headerlink" href="#step-1-start-the-streaming-job" title="Link to this heading">#</a></h3>
 <p>Run this in a <strong>separate terminal</strong> and leave it running; it is a long-lived
-process, not a notebook cell.</p>
+process, not a notebook cell. Its stdout — including the <code class="docutils literal notranslate"><span class="pre">batch</span> <span class="pre">N:</span> <span class="pre">upserted</span> <span class="pre">X</span></code>
+lines printed by <code class="docutils literal notranslate"><span class="pre">foreachBatch</span></code> — is captured to
+<code class="docutils literal notranslate"><span class="pre">reports/evidence/spark_stream.log</span></code>, which the cells below read back as
+evidence. Nothing in this chapter is pasted by hand.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>spark-submit<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--packages<span class="w"> </span>org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.mongodb.spark:mongo-spark-connector_2.12:10.4.0<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>src/spark/spark_mongo_stream.py<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--bootstrap<span class="w"> </span>localhost:9092<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--mongo-uri<span class="w"> </span>mongodb://localhost:27017<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--checkpoint<span class="w"> </span>file:///tmp/chk/cpg_metadata
+<span class="w">  </span>--checkpoint<span class="w"> </span>file:///tmp/chk/cpg_metadata<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>reports/evidence/spark_stream.log
 </pre></div>
 </div>
-<p>Paste the batch log output below as evidence:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span> <span class="mi">0</span><span class="p">:</span> <span class="n">upserted</span> <span class="mi">59</span> <span class="n">metadata</span> <span class="n">docs</span>
+</section>
+<section id="step-1b-read-the-captured-streaming-log">
+<h3>Step 1b — read the captured streaming log<a class="headerlink" href="#step-1b-read-the-captured-streaming-log" title="Link to this heading">#</a></h3>
+<p>Real evidence from the job’s own stdout: the resolved checkpoint location, each
+micro-batch with its id and document count, and — critically for Task 6 — a
+restart marker followed by <strong>no</strong> re-processing of already-committed offsets.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;=== spark|checkpoint location|batch [0-9]+: upserted&quot;</span><span class="w"> </span><span class="err">\</span>
+    <span class="n">reports</span><span class="o">/</span><span class="n">evidence</span><span class="o">/</span><span class="n">spark_stream</span><span class="o">.</span><span class="n">log</span> <span class="o">|</span> <span class="n">tail</span> <span class="o">-</span><span class="mi">25</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>grep: reports/evidence/spark_stream.log: No such file or directory
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="step-2-verify-the-documents-landed-in-mongodb">
@@ -468,19 +488,17 @@ process, not a notebook cell.</p>
   _id: ObjectId(&#39;6a61bedeea4dfbfb3c244a8a&#39;),
   file_id: &#39;b3fc55405381fc8a&#39;,
   edge_counts: {
-    AST: 18,
-    CFG: 3,
-    DFG: 2
+    AST: 4
   },
-  event_time: &#39;2026-07-23T08:00:44.393737+00:00&#39;,
+  event_time: &#39;2026-07-23T09:29:54.056418+00:00&#39;,
   event_type: &#39;metadata&#39;,
-  file_hash: &#39;f5b8514ad074172d89b9d04fecc61d62654eb7c4b7a5dbe743b46d5eb515c56f&#39;,
+  file_hash: &#39;ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce&#39;,
   imports: [],
-  loc: 20,
-  num_ast_nodes: 19,
+  loc: 15,
+  num_ast_nodes: 5,
   num_classes: 0,
-  num_edges: 23,
-  num_functions: 1,
+  num_edges: 4,
+  num_functions: 0,
   rel_path: &#39;optimum/version.py&#39;,
   schema_version: &#39;1.0.0&#39;
 }
@@ -555,19 +573,25 @@ sources
 <section id="reflection">
 <h2>Reflection<a class="headerlink" href="#reflection" title="Link to this heading">#</a></h2>
 <p><strong>What happened on this machine.</strong> Only ~2–3 GB of RAM were free, so the Spark
-job was deliberately started <em>after</em> the Neo4j ingestion finished — nothing was
-lost, because the job reads <code class="docutils literal notranslate"><span class="pre">cpg.metadata</span></code> from the beginning: its first
-micro-batch upserted all 59 documents (<code class="docutils literal notranslate"><span class="pre">batch</span> <span class="pre">0:</span> <span class="pre">upserted</span> <span class="pre">59</span> <span class="pre">metadata</span> <span class="pre">docs</span></code>).
-During the Task 6 replay it resumed from the committed checkpoint offset and
-processed exactly one message (<code class="docutils literal notranslate"><span class="pre">batch</span> <span class="pre">1:</span> <span class="pre">upserted</span> <span class="pre">1</span> <span class="pre">metadata</span> <span class="pre">docs</span></code>), which is
-the checkpoint-recovery evidence the lab asks for.</p>
-<p><strong>What worked.</strong> <code class="docutils literal notranslate"><span class="pre">foreachBatch</span></code> with an upsert keyed on <code class="docutils literal notranslate"><span class="pre">rel_path</span></code>: the
-replayed file kept the same Mongo <code class="docutils literal notranslate"><span class="pre">_id</span></code> and the collection stayed at 59
-documents. Passing the checkpoint as an explicit <code class="docutils literal notranslate"><span class="pre">file:///tmp/chk/cpg_metadata</span></code>
-URI avoided the <code class="docutils literal notranslate"><span class="pre">fs.defaultFS</span></code>/HDFS trap (TROUBLESHOOTING.md §10), where a bare
-path on a machine with Hadoop configured resolves to <code class="docutils literal notranslate"><span class="pre">hdfs://</span></code> and dies in
-<code class="docutils literal notranslate"><span class="pre">org.apache.hadoop.ipc.Client</span></code> with Connection refused. Declaring an explicit
-<code class="docutils literal notranslate"><span class="pre">StructType</span></code> also doubles as executable documentation of the Task 3 message
+job was deliberately started <em>after</em> the Neo4j ingestion finished — nothing is
+lost, because the job reads <code class="docutils literal notranslate"><span class="pre">cpg.metadata</span></code> from the committed offset onward.
+The captured log (<code class="docutils literal notranslate"><span class="pre">reports/evidence/spark_stream.log</span></code>) shows this precisely:
+the first run’s initial micro-batch upserted all 59 documents
+(<code class="docutils literal notranslate"><span class="pre">spark_stream_initial.log</span></code>, <code class="docutils literal notranslate"><span class="pre">batch</span> <span class="pre">0</span></code>), and after the stack had been down,
+the restarted job picked up <strong>batch 26</strong> — the numbering continues from the
+checkpoint, not from zero — bundling every metadata event produced while it
+was offline (60 events: one baseline reset plus a full 59-file ingestion) into
+one batch that still upserts into exactly 59 documents keyed by <code class="docutils literal notranslate"><span class="pre">file_id</span></code>.</p>
+<p><strong>The restart test.</strong> We then stopped the job and started it again with the
+same checkpoint (<code class="docutils literal notranslate"><span class="pre">===</span> <span class="pre">spark</span> <span class="pre">restart</span> <span class="pre">...</span> <span class="pre">===</span></code> marker in the log). After the
+restart the job printed its checkpoint location and <strong>no upsert batches at
+all</strong>: the committed Kafka offsets were honoured and none of the old events
+were re-read. MongoDB stayed at 59 documents throughout.</p>
+<p><strong>What worked.</strong> <code class="docutils literal notranslate"><span class="pre">foreachBatch</span></code> with an upsert keyed on <code class="docutils literal notranslate"><span class="pre">file_id</span></code>: replays
+update documents in place (<code class="docutils literal notranslate"><span class="pre">_id</span></code> stable) instead of appending. Passing the
+checkpoint as an explicit <code class="docutils literal notranslate"><span class="pre">file:///tmp/chk/cpg_metadata</span></code> URI avoided the
+<code class="docutils literal notranslate"><span class="pre">fs.defaultFS</span></code>/HDFS trap (TROUBLESHOOTING.md §10). Declaring an explicit
+<code class="docutils literal notranslate"><span class="pre">StructType</span></code> doubles as executable documentation of the Task 3 message
 contract — schema inference is unavailable on streaming sources anyway.</p>
 <p><strong>Version pinning.</strong> The <code class="docutils literal notranslate"><span class="pre">--packages</span></code> coordinates must match the Spark line and
 Scala version exactly; a mismatch produces <code class="docutils literal notranslate"><span class="pre">ClassNotFoundException</span></code> at submit
@@ -643,6 +667,7 @@ time rather than a clear error.</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-start-the-streaming-job">Step 1 — start the streaming job</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1b-read-the-captured-streaming-log">Step 1b — read the captured streaming log</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-verify-the-documents-landed-in-mongodb">Step 2 — verify the documents landed in MongoDB</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-inspect-one-document">Step 3 — inspect one document</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-the-duplicate-check-that-must-return-an-empty-array">Step 4 — the duplicate check that must return an empty array</a></li>

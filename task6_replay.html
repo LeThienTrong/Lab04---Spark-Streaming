@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -381,20 +381,17 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-the-three-layers-do-not-solve">The problem the three layers do <em>not</em> solve</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-source-level-proof-before-touching-any-database">Step 1 — source-level proof, before touching any database</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-record-the-before-state-of-both-databases">Step 2 — record the “before” state of both databases</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-actually-modify-the-file">Step 3 — actually modify the file</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-refresh-the-manifest-so-the-new-content-hash-is-picked-up">Step 4 — refresh the manifest so the new content hash is picked up</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-reprocess-only-that-file">Step 5 — reprocess ONLY that file</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-run-the-generation-sweep-to-remove-stale-nodes">Step 6 — run the generation sweep to remove stale nodes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-verify-neo4j-updated-no-duplicates">Step 7 — verify Neo4j: updated, no duplicates</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-8-verify-mongodb-document-updated-still-exactly-one">Step 8 — verify MongoDB: document updated, still exactly one</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-9-verify-the-spark-checkpoint-skipped-unchanged-offsets">Step 9 — verify the Spark checkpoint skipped unchanged offsets</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#database-ui-evidence">Database UI evidence</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-source-level-proof-before-touching-any-database">Step 1 — source-level proof, before touching any database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-record-the-before-state-of-both-databases">Step 2 — record the “before” state of both databases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-deterministic-baseline-reset">Step 2 — deterministic baseline reset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-record-the-before-state">Step 3 — record the BEFORE state</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-modify-exactly-one-file-idempotent-edit">Step 4 — modify exactly ONE file (idempotent edit)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-refresh-the-manifest-reprocess-only-that-file">Step 5 — refresh the manifest, reprocess ONLY that file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-wait-for-the-sinks-to-drain-then-generation-sweep">Step 6 — wait for the sinks to drain, then generation sweep</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-record-the-after-state">Step 7 — record the AFTER state</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-8-spark-checkpoint-evidence-from-the-real-log">Step 8 — Spark checkpoint evidence, from the real log</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-9-verification-verdict">Step 9 — verification verdict</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-ui-evidence">Database UI evidence</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reflection">Reflection</a></li>
 </ul>
             </nav>
@@ -409,44 +406,16 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="task-6-idempotent-replay-verification">
 <h1>Task 6 — Idempotent Replay Verification<a class="headerlink" href="#task-6-idempotent-replay-verification" title="Link to this heading">#</a></h1>
-<section id="approach-and-reasoning">
-<h2>Approach and reasoning<a class="headerlink" href="#approach-and-reasoning" title="Link to this heading">#</a></h2>
-<p>The lab asks us to modify one Python file, reprocess <strong>only that file</strong>, and show
-that all three systems reflect the update without duplication.</p>
-<p>Idempotency is enforced at three independent layers, which is deliberate — any
-one of them failing would otherwise corrupt the graph silently:</p>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Layer</p></th>
-<th class="head"><p>Mechanism</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Parser</p></td>
-<td><p>structural, line-independent identifiers</p></td>
-</tr>
-<tr class="row-odd"><td><p>Neo4j sink</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">MERGE</span></code> on the stable id (never <code class="docutils literal notranslate"><span class="pre">CREATE</span></code>)</p></td>
-</tr>
-<tr class="row-even"><td><p>Spark → Mongo</p></td>
-<td><p>upsert on <code class="docutils literal notranslate"><span class="pre">file_id</span></code> + offset checkpoint</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<section id="the-problem-the-three-layers-do-not-solve">
-<h3>The problem the three layers do <em>not</em> solve<a class="headerlink" href="#the-problem-the-three-layers-do-not-solve" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">MERGE</span></code> guarantees that re-emitted elements are updated rather than duplicated.
-It says nothing about elements that are <strong>no longer emitted</strong> — when an edit
-deletes a function, that function’s nodes are simply never sent again, so they
-linger in Neo4j as orphans.</p>
-<p>We solve this with a <strong>generation sweep</strong>. Every element carries its file’s
-sha256 as <code class="docutils literal notranslate"><span class="pre">file_hash</span></code>. After reprocessing a file we delete elements of that file
-whose <code class="docutils literal notranslate"><span class="pre">file_hash</span></code> differs from the current one. The sweep is scoped to a single
-<code class="docutils literal notranslate"><span class="pre">file_id</span></code>, so it can never touch another file’s subgraph.</p>
-</section>
+<p>The claim to prove: reprocessing a changed file <strong>updates</strong> the databases
+instead of duplicating them, and removing stale leftovers is deterministic.
+The whole chapter is one reproducible flow:</p>
+<p><strong>Baseline</strong> → <strong>modify exactly one file</strong> → <strong>reprocess exactly one file</strong> →
+<strong>Neo4j update</strong> → <strong>MongoDB upsert</strong> → <strong>checkpoint verification</strong> →
+<strong>duplicate/stale verification</strong> → <strong>final PASS</strong></p>
+<p>Every measurement is written to <code class="docutils literal notranslate"><span class="pre">reports/evidence/</span></code> as JSON, so the numbers in
+this chapter are artifacts of execution, not prose.</p>
 <section id="step-1-source-level-proof-before-touching-any-database">
-<h3>Step 1 — source-level proof, before touching any database<a class="headerlink" href="#step-1-source-level-proof-before-touching-any-database" title="Link to this heading">#</a></h3>
+<h2>Step 1 — source-level proof, before touching any database<a class="headerlink" href="#step-1-source-level-proof-before-touching-any-database" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span>
@@ -492,204 +461,369 @@ their identifiers. A line-based identifier scheme would report zero survivors an
 duplicate the entire file downstream.</p>
 </section>
 <section id="step-2-record-the-before-state-of-both-databases">
-<h3>Step 2 — record the “before” state of both databases<a class="headerlink" href="#step-2-record-the-before-state-of-both-databases" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>neo4j<span class="w"> </span>cypher-shell<span class="w"> </span>-u<span class="w"> </span>neo4j<span class="w"> </span>-p<span class="w"> </span>password<span class="w"> </span><span class="err">\</span>
-  <span class="s2">&quot;MATCH (n:CpgNode {rel_path:&#39;optimum/version.py&#39;}) RETURN count(n) AS nodes_before&quot;</span>
-<span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>mongodb<span class="w"> </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>cpg<span class="w"> </span>--eval<span class="w"> </span><span class="err">\</span>
-  <span class="s2">&quot;db.file_metadata.countDocuments({rel_path:&#39;optimum/version.py&#39;})&quot;</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nodes_before
-19
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1
-</pre></div>
-</div>
-</div>
-</div>
+<h2>Step 2 — record the “before” state of both databases<a class="headerlink" href="#step-2-record-the-before-state-of-both-databases" title="Link to this heading">#</a></h2>
 </section>
-<section id="step-3-actually-modify-the-file">
-<h3>Step 3 — actually modify the file<a class="headerlink" href="#step-3-actually-modify-the-file" title="Link to this heading">#</a></h3>
+<section id="step-2-deterministic-baseline-reset">
+<h2>Step 2 — deterministic baseline reset<a class="headerlink" href="#step-2-deterministic-baseline-reset" title="Link to this heading">#</a></h2>
+<p>A replay demonstration is only convincing if it starts from a known state.
+<code class="docutils literal notranslate"><span class="pre">scripts/reset_replay_target.py</span></code> idempotently strips the lab edit (the header
+comment and the <code class="docutils literal notranslate"><span class="pre">_lab_replay_marker</span></code> function) from the target file; the file
+is then reprocessed and the generation sweep removes every element of the
+previous (marker) generation from Neo4j — <strong>relationships first, then nodes</strong>,
+because a stale edge between two surviving nodes would outlive a node-only
+sweep. Re-running this notebook always converges to the same baseline.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;optimum/optimum/version.py&quot;</span>
-<span class="n">src</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="k">if</span> <span class="s2">&quot;_lab_replay_marker&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
-    <span class="nb">open</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-        <span class="s2">&quot;# lab04 replay edit: shifts every line number below</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="n">src</span>
-        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">def _lab_replay_marker(x):</span><span class="se">\n</span><span class="s2">    y = x + 1</span><span class="se">\n</span><span class="s2">    return y</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()[:</span><span class="mi">300</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>scripts/reset_replay_target.py
+<span class="o">!</span>python<span class="w"> </span>src/discovery/discover_files.py<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--out<span class="w"> </span>reports/file_manifest.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-1
+<span class="o">!</span>python<span class="w"> </span>src/parser/parser_service.py<span class="w"> </span>--manifest<span class="w"> </span>reports/file_manifest.json<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--only<span class="w"> </span>optimum/version.py<span class="w"> </span>--bootstrap<span class="w"> </span>localhost:9092<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-2
+<span class="o">!</span>sleep<span class="w"> </span><span class="m">25</span>
+<span class="o">!</span>python<span class="w"> </span>src/replay/sweep.py<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--rel-path<span class="w"> </span>optimum/version.py<span class="w"> </span>--json-out<span class="w"> </span>reports/evidence/task6_reset_sweep.json
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span># lab04 replay edit: shifts every line number below
-#  Copyright 2021 The HuggingFace Team. All rights reserved.
-#
-#  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#    
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file      : optimum/version.py
+state     : baseline (cleaned)
+file_hash : ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce
 </pre></div>
 </div>
-</div>
-</div>
-</section>
-<section id="step-4-refresh-the-manifest-so-the-new-content-hash-is-picked-up">
-<h3>Step 4 — refresh the manifest so the new content hash is picked up<a class="headerlink" href="#step-4-refresh-the-manifest-so-the-new-content-hash-is-picked-up" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>src/discovery/discover_files.py<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--out<span class="w"> </span>reports/file_manifest.json
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Manifest written  -&gt; reports/file_manifest.json
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Repository        : /home/trong/lab04/optimum
-Total .py found   : 74
-Excluded          : 15
-Included (source) : 59
-By top-level dir  :
-    optimum              58
-    docs                 1
-Manifest written  -&gt; reports/file_manifest.json
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="step-5-reprocess-only-that-file">
-<h3>Step 5 — reprocess ONLY that file<a class="headerlink" href="#step-5-reprocess-only-that-file" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>src/parser/parser_service.py<span class="w"> </span>--manifest<span class="w"> </span>reports/file_manifest.json<span class="w"> </span><span class="err">\</span>
-    <span class="o">--</span><span class="n">repo</span> <span class="o">./</span><span class="n">optimum</span> <span class="o">--</span><span class="n">only</span> <span class="n">optimum</span><span class="o">/</span><span class="n">version</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">bootstrap</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">9092</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 1/1 files
+Event counts: {&#39;node&#39;: 5, &#39;edge&#39;: 4, &#39;metadata&#39;: 1, &#39;error&#39;: 0}
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Event counts: {&#39;node&#39;: 19, &#39;edge&#39;: 23, &#39;metadata&#39;: 1, &#39;error&#39;: 0}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file      : optimum/version.py
+file_id   : b3fc55405381fc8a
+file_hash : ac342f9e8fd3f74b... (current generation)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nodes for this file : 19   (stale old-gen: 14)
+edges for this file : 23   (stale old-gen: 19)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>after sweep         : 5 nodes (deleted 14), 4 edges (deleted 19)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stale nodes / edges (this file) : 0 / 0
+duplicate node ids in DB        : 0
+duplicate edge ids in DB        : 0
+RESULT: PASS (idempotent)
+json      : reports/evidence/task6_reset_sweep.json
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="step-6-run-the-generation-sweep-to-remove-stale-nodes">
-<h3>Step 6 — run the generation sweep to remove stale nodes<a class="headerlink" href="#step-6-run-the-generation-sweep-to-remove-stale-nodes" title="Link to this heading">#</a></h3>
+<section id="step-3-record-the-before-state">
+<h2>Step 3 — record the BEFORE state<a class="headerlink" href="#step-3-record-the-before-state" title="Link to this heading">#</a></h2>
+<p>One snapshot with everything the verdict needs: per-file node/edge counts,
+DB-wide totals, duplicate and stale counts for both nodes and edges, and the
+MongoDB document (<code class="docutils literal notranslate"><span class="pre">_id</span></code>, <code class="docutils literal notranslate"><span class="pre">file_hash</span></code>, count) for the target file.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>src/replay/sweep.py<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--rel-path<span class="w"> </span>optimum/version.py<span class="w"> </span><span class="err">\</span>
-    <span class="o">--</span><span class="n">uri</span> <span class="n">bolt</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">7687</span> <span class="o">--</span><span class="n">user</span> <span class="n">neo4j</span> <span class="o">--</span><span class="n">password</span> <span class="n">password</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>sleep<span class="w"> </span><span class="m">20</span>
+<span class="o">!</span>python<span class="w"> </span>scripts/replay_evidence.py<span class="w"> </span>--out<span class="w"> </span>reports/evidence/task6_before.json
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
+  &quot;rel_path&quot;: &quot;optimum/version.py&quot;,
+  &quot;file_id&quot;: &quot;b3fc55405381fc8a&quot;,
+  &quot;file_hash_on_disk&quot;: &quot;ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce&quot;,
+  &quot;nodes_file&quot;: 5,
+  &quot;edges_file&quot;: 4,
+  &quot;nodes_total&quot;: 58817,
+  &quot;edges_total&quot;: 73587,
+  &quot;duplicate_nodes&quot;: 0,
+  &quot;duplicate_edges&quot;: 0,
+  &quot;stale_nodes&quot;: 0,
+  &quot;stale_edges&quot;: 0,
+  &quot;mongo_document&quot;: {
+    &quot;_id&quot;: &quot;6a61bedeea4dfbfb3c244a8a&quot;,
+    &quot;file_hash&quot;: &quot;ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce&quot;,
+    &quot;num_ast_nodes&quot;: 5,
+    &quot;rel_path&quot;: &quot;optimum/version.py&quot;
+  },
+  &quot;mongo_count_for_file&quot;: 1,
+  &quot;mongo_total_documents&quot;: 59
+}
+
+written -&gt; reports/evidence/task6_before.json
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-4-modify-exactly-one-file-idempotent-edit">
+<h2>Step 4 — modify exactly ONE file (idempotent edit)<a class="headerlink" href="#step-4-modify-exactly-one-file-idempotent-edit" title="Link to this heading">#</a></h2>
+<p>Two changes at once, on purpose: a header comment that <strong>shifts every line
+number in the file</strong>, and a new function appended at the end. A line-based
+identifier scheme would re-create every element; structural ids must update in
+place. The edit script only adds the marker when it is absent — running the
+cell twice cannot produce a double marker, which the repeated invocation below
+demonstrates.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>scripts/reset_replay_target.py<span class="w"> </span>--add-marker
+<span class="o">!</span>python<span class="w"> </span>scripts/reset_replay_target.py<span class="w"> </span>--add-marker
+<span class="o">!</span>tail<span class="w"> </span>-5<span class="w"> </span>optimum/optimum/version.py
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file      : optimum/version.py
+state     : marker present (added)
+file_hash : e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file      : optimum/version.py
+state     : marker present (already)
+file_hash : e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>def _lab_replay_marker(value):
+    temporary_value = value + 1
+    return temporary_value
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-5-refresh-the-manifest-reprocess-only-that-file">
+<h2>Step 5 — refresh the manifest, reprocess ONLY that file<a class="headerlink" href="#step-5-refresh-the-manifest-reprocess-only-that-file" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">processed</span> <span class="pre">1/1</span> <span class="pre">files</span></code> and <code class="docutils literal notranslate"><span class="pre">'metadata':</span> <span class="pre">1</span></code> are the point: the parser re-emits
+one file and stays silent about the other 58.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>src/discovery/discover_files.py<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--out<span class="w"> </span>reports/file_manifest.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-1
+<span class="o">!</span>python<span class="w"> </span>src/parser/parser_service.py<span class="w"> </span>--manifest<span class="w"> </span>reports/file_manifest.json<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--only<span class="w"> </span>optimum/version.py<span class="w"> </span>--bootstrap<span class="w"> </span>localhost:9092
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Manifest written  -&gt; reports/file_manifest.json
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 1/1 files
+Event counts: {&#39;node&#39;: 19, &#39;edge&#39;: 23, &#39;metadata&#39;: 1, &#39;error&#39;: 0}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-6-wait-for-the-sinks-to-drain-then-generation-sweep">
+<h2>Step 6 — wait for the sinks to drain, then generation sweep<a class="headerlink" href="#step-6-wait-for-the-sinks-to-drain-then-generation-sweep" title="Link to this heading">#</a></h2>
+<p>This edit only <em>adds</em> elements, so <code class="docutils literal notranslate"><span class="pre">MERGE</span></code> refreshes every old id and the sweep
+finds nothing stale — the interesting direction was Step 2, where removing the
+marker left an entire stale generation behind. The sweep reports both
+directions the same way: stale/duplicate counts for nodes <strong>and</strong> edges.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>sleep<span class="w"> </span><span class="m">25</span>
+<span class="o">!</span>python<span class="w"> </span>src/replay/sweep.py<span class="w"> </span>--repo<span class="w"> </span>./optimum<span class="w"> </span>--rel-path<span class="w"> </span>optimum/version.py<span class="w"> </span>--json-out<span class="w"> </span>reports/evidence/task6_sweep.json
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file      : optimum/version.py
 file_id   : b3fc55405381fc8a
-file_hash : f5b8514ad074172d... (current generation)
+file_hash : e6df63ea2343b50e... (current generation)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nodes for this file : 19
-stale (old gen)     : 0
-after sweep         : 19  (deleted 0)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nodes for this file : 19   (stale old-gen: 0)
+edges for this file : 23   (stale old-gen: 0)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>duplicate node ids in DB : 0  PASS (idempotent)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>after sweep         : 19 nodes (deleted 0), 23 edges (deleted 0)
 </pre></div>
 </div>
-</div>
-</div>
-</section>
-<section id="step-7-verify-neo4j-updated-no-duplicates">
-<h3>Step 7 — verify Neo4j: updated, no duplicates<a class="headerlink" href="#step-7-verify-neo4j-updated-no-duplicates" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>neo4j<span class="w"> </span>cypher-shell<span class="w"> </span>-u<span class="w"> </span>neo4j<span class="w"> </span>-p<span class="w"> </span>password<span class="w"> </span><span class="err">\</span>
-  <span class="s2">&quot;MATCH (n:CpgNode {rel_path:&#39;optimum/version.py&#39;}) RETURN count(n) AS nodes_after&quot;</span>
-<span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>neo4j<span class="w"> </span>cypher-shell<span class="w"> </span>-u<span class="w"> </span>neo4j<span class="w"> </span>-p<span class="w"> </span>password<span class="w"> </span><span class="err">\</span>
-  <span class="s2">&quot;MATCH (n:CpgNode) WITH n.id AS id, count(*) AS c WHERE c &gt; 1 RETURN id, c&quot;</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nodes_after
-19
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stale nodes / edges (this file) : 0 / 0
+duplicate node ids in DB        : 0
+duplicate edge ids in DB        : 0
+RESULT: PASS (idempotent)
+json      : reports/evidence/task6_sweep.json
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="step-8-verify-mongodb-document-updated-still-exactly-one">
-<h3>Step 8 — verify MongoDB: document updated, still exactly one<a class="headerlink" href="#step-8-verify-mongodb-document-updated-still-exactly-one" title="Link to this heading">#</a></h3>
+<section id="step-7-record-the-after-state">
+<h2>Step 7 — record the AFTER state<a class="headerlink" href="#step-7-record-the-after-state" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>mongodb<span class="w"> </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>cpg<span class="w"> </span>--eval<span class="w"> </span><span class="err">\</span>
-  <span class="s2">&quot;db.file_metadata.countDocuments({rel_path:&#39;optimum/version.py&#39;})&quot;</span>
-<span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>mongodb<span class="w"> </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>cpg<span class="w"> </span>--eval<span class="w"> </span><span class="err">\</span>
-  <span class="s2">&quot;printjson(db.file_metadata.findOne({rel_path:&#39;optimum/version.py&#39;},{rel_path:1,file_hash:1,num_ast_nodes:1,num_functions:1}))&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>sleep<span class="w"> </span><span class="m">15</span>
+<span class="o">!</span>python<span class="w"> </span>scripts/replay_evidence.py<span class="w"> </span>--out<span class="w"> </span>reports/evidence/task6_after.json
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1
-</pre></div>
-</div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
-  _id: ObjectId(&#39;6a61bedeea4dfbfb3c244a8a&#39;),
-  file_hash: &#39;f5b8514ad074172d89b9d04fecc61d62654eb7c4b7a5dbe743b46d5eb515c56f&#39;,
-  num_ast_nodes: 19,
-  num_functions: 1,
-  rel_path: &#39;optimum/version.py&#39;
+  &quot;rel_path&quot;: &quot;optimum/version.py&quot;,
+  &quot;file_id&quot;: &quot;b3fc55405381fc8a&quot;,
+  &quot;file_hash_on_disk&quot;: &quot;e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5&quot;,
+  &quot;nodes_file&quot;: 19,
+  &quot;edges_file&quot;: 23,
+  &quot;nodes_total&quot;: 58831,
+  &quot;edges_total&quot;: 73606,
+  &quot;duplicate_nodes&quot;: 0,
+  &quot;duplicate_edges&quot;: 0,
+  &quot;stale_nodes&quot;: 0,
+  &quot;stale_edges&quot;: 0,
+  &quot;mongo_document&quot;: {
+    &quot;_id&quot;: &quot;6a61bedeea4dfbfb3c244a8a&quot;,
+    &quot;file_hash&quot;: &quot;e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5&quot;,
+    &quot;num_ast_nodes&quot;: 19,
+    &quot;rel_path&quot;: &quot;optimum/version.py&quot;
+  },
+  &quot;mongo_count_for_file&quot;: 1,
+  &quot;mongo_total_documents&quot;: 59
 }
+
+written -&gt; reports/evidence/task6_after.json
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="step-9-verify-the-spark-checkpoint-skipped-unchanged-offsets">
-<h3>Step 9 — verify the Spark checkpoint skipped unchanged offsets<a class="headerlink" href="#step-9-verify-the-spark-checkpoint-skipped-unchanged-offsets" title="Link to this heading">#</a></h3>
-<p>Paste the streaming log from the running job. The evidence is that the batch
-triggered by the replay contains <strong>1</strong> document, not 59 — Spark resumed from the
-committed offset and read only the newly produced message.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span> <span class="mi">1</span><span class="p">:</span> <span class="n">upserted</span> <span class="mi">1</span> <span class="n">metadata</span> <span class="n">docs</span>
+<section id="step-8-spark-checkpoint-evidence-from-the-real-log">
+<h2>Step 8 — Spark checkpoint evidence, from the real log<a class="headerlink" href="#step-8-spark-checkpoint-evidence-from-the-real-log" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">reports/evidence/spark_stream.log</span></code> is the streaming job’s captured stdout.
+The lines below show the resolved checkpoint location, a restart marker
+followed by <strong>no</strong> replay of committed offsets, and micro-batches whose
+document counts match the single-file reprocessing done in this chapter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;=== spark|checkpoint location|batch [0-9]+: upserted&quot;</span><span class="w"> </span><span class="err">\</span>
+    <span class="n">reports</span><span class="o">/</span><span class="n">evidence</span><span class="o">/</span><span class="n">spark_stream</span><span class="o">.</span><span class="n">log</span> <span class="o">|</span> <span class="n">tail</span> <span class="o">-</span><span class="mi">15</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1:=== spark start 2026-07-23T09:30:36+00:00 ===
+239:checkpoint location : file:///tmp/chk/cpg_metadata
+247:batch 26: upserted 60 metadata docs
+248:=== spark restart (checkpoint reuse test) 2026-07-23T09:31:57+00:00 ===
+486:checkpoint location : file:///tmp/chk/cpg_metadata
+494:batch 27: upserted 1 metadata docs
+498:batch 28: upserted 1 metadata docs
+502:batch 29: upserted 1 metadata docs
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-9-verification-verdict">
+<h2>Step 9 — verification verdict<a class="headerlink" href="#step-9-verification-verdict" title="Link to this heading">#</a></h2>
+<p>Computed from the recorded evidence files, not typed in. Every condition must
+hold or the status is FAIL:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span><span class="o">,</span><span class="w"> </span><span class="nn">re</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+
+<span class="n">before</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;reports/evidence/task6_before.json&quot;</span><span class="p">))</span>
+<span class="n">after</span>  <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;reports/evidence/task6_after.json&quot;</span><span class="p">))</span>
+<span class="n">log</span>    <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;reports/evidence/spark_stream.log&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+<span class="n">batches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;batch (\d+): upserted (\d+) metadata docs&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+<span class="n">last_batch_docs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">batches</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">batches</span> <span class="k">else</span> <span class="kc">None</span>
+
+<span class="n">checks</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;file_hash_changed&quot;</span><span class="p">:</span>     <span class="n">before</span><span class="p">[</span><span class="s2">&quot;file_hash_on_disk&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;file_hash_on_disk&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;graph_changed&quot;</span><span class="p">:</span>         <span class="p">(</span><span class="n">before</span><span class="p">[</span><span class="s2">&quot;nodes_file&quot;</span><span class="p">],</span> <span class="n">before</span><span class="p">[</span><span class="s2">&quot;edges_file&quot;</span><span class="p">])</span>
+                             <span class="o">!=</span> <span class="p">(</span><span class="n">after</span><span class="p">[</span><span class="s2">&quot;nodes_file&quot;</span><span class="p">],</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;edges_file&quot;</span><span class="p">]),</span>
+    <span class="s2">&quot;mongo_id_stable&quot;</span><span class="p">:</span>       <span class="n">before</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;mongo_hash_updated&quot;</span><span class="p">:</span>    <span class="n">before</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;file_hash&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;file_hash&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;mongo_single_document&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;mongo_count_for_file&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;duplicate_nodes_zero&quot;</span><span class="p">:</span>  <span class="n">after</span><span class="p">[</span><span class="s2">&quot;duplicate_nodes&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;duplicate_edges_zero&quot;</span><span class="p">:</span>  <span class="n">after</span><span class="p">[</span><span class="s2">&quot;duplicate_edges&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;stale_nodes_zero&quot;</span><span class="p">:</span>      <span class="n">after</span><span class="p">[</span><span class="s2">&quot;stale_nodes&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;stale_edges_zero&quot;</span><span class="p">:</span>      <span class="n">after</span><span class="p">[</span><span class="s2">&quot;stale_edges&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;spark_last_batch_one_doc&quot;</span><span class="p">:</span> <span class="n">last_batch_docs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">verdict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;file_id&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;file_id&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;file_path&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;rel_path&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;file_hash_before&quot;</span><span class="p">:</span> <span class="n">before</span><span class="p">[</span><span class="s2">&quot;file_hash_on_disk&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;file_hash_after&quot;</span><span class="p">:</span>  <span class="n">after</span><span class="p">[</span><span class="s2">&quot;file_hash_on_disk&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;nodes_before&quot;</span><span class="p">:</span> <span class="n">before</span><span class="p">[</span><span class="s2">&quot;nodes_file&quot;</span><span class="p">],</span> <span class="s2">&quot;nodes_after&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;nodes_file&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;edges_before&quot;</span><span class="p">:</span> <span class="n">before</span><span class="p">[</span><span class="s2">&quot;edges_file&quot;</span><span class="p">],</span> <span class="s2">&quot;edges_after&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;edges_file&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;nodes_total_after&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;nodes_total&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;edges_total_after&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;edges_total&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;mongodb_id_before&quot;</span><span class="p">:</span> <span class="n">before</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;mongodb_id_after&quot;</span><span class="p">:</span>  <span class="n">after</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;mongodb_hash_before&quot;</span><span class="p">:</span> <span class="n">before</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;file_hash&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;mongodb_hash_after&quot;</span><span class="p">:</span>  <span class="n">after</span><span class="p">[</span><span class="s2">&quot;mongo_document&quot;</span><span class="p">][</span><span class="s2">&quot;file_hash&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;mongodb_document_count&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;mongo_count_for_file&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;duplicate_nodes&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;duplicate_nodes&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;duplicate_edges&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;duplicate_edges&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;stale_nodes&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;stale_nodes&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;stale_edges&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">[</span><span class="s2">&quot;stale_edges&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;spark_replay_documents&quot;</span><span class="p">:</span> <span class="n">last_batch_docs</span><span class="p">,</span>
+    <span class="s2">&quot;parser_processed_files&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;checks&quot;</span><span class="p">:</span> <span class="n">checks</span><span class="p">,</span>
+    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">checks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">verdict</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;reports/evidence/task6_verification.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">checks</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">checks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;PASS&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;FAIL&#39;</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">k</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">nodes </span><span class="si">{</span><span class="n">verdict</span><span class="p">[</span><span class="s1">&#39;nodes_before&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">verdict</span><span class="p">[</span><span class="s1">&#39;nodes_after&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;edges </span><span class="si">{</span><span class="n">verdict</span><span class="p">[</span><span class="s1">&#39;edges_before&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">verdict</span><span class="p">[</span><span class="s1">&#39;edges_after&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;spark replay batch = </span><span class="si">{</span><span class="n">verdict</span><span class="p">[</span><span class="s1">&#39;spark_replay_documents&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> doc(s)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STATUS:&quot;</span><span class="p">,</span> <span class="n">verdict</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PASS  file_hash_changed       
+PASS  graph_changed           
+PASS  mongo_id_stable         
+PASS  mongo_hash_updated      
+PASS  mongo_single_document   
+PASS  duplicate_nodes_zero    
+PASS  duplicate_edges_zero    
+PASS  stale_nodes_zero        
+PASS  stale_edges_zero        
+PASS  spark_last_batch_one_doc
+
+nodes 5 -&gt; 19, edges 4 -&gt; 23, spark replay batch = 1 doc(s)
+STATUS: PASS
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="database-ui-evidence">
-<h3>Database UI evidence<a class="headerlink" href="#database-ui-evidence" title="Link to this heading">#</a></h3>
+<h2>Database UI evidence<a class="headerlink" href="#database-ui-evidence" title="Link to this heading">#</a></h2>
 <p>Neo4j Browser after the replay and sweep — node count for the edited file, and
 the DB-wide duplicate check returning no rows:</p>
 <p><img alt="Neo4j after replay" src="_images/neo4j_after_replay.png" /></p>
 <p><img alt="Neo4j duplicate check empty" src="_images/neo4j_no_duplicates.png" /></p>
 </section>
-</section>
 <section id="reflection">
 <h2>Reflection<a class="headerlink" href="#reflection" title="Link to this heading">#</a></h2>
 <p><strong>What worked.</strong> The structural identifier design paid off exactly here. The
-replay edit appended a function <em>and</em> shifted every line with a header comment;
-a line-based id scheme would have duplicated the whole file. Instead, all 5
-original nodes were re-emitted with identical ids and <code class="docutils literal notranslate"><span class="pre">MERGE</span></code> updated them in
-place: Neo4j went 5 → 19 nodes for <code class="docutils literal notranslate"><span class="pre">optimum/version.py</span></code> with the DB-wide
-duplicate query returning zero rows, and MongoDB kept exactly one document —
-same <code class="docutils literal notranslate"><span class="pre">_id</span></code>, new <code class="docutils literal notranslate"><span class="pre">file_hash</span></code>, <code class="docutils literal notranslate"><span class="pre">num_ast_nodes</span></code> 5 → 19. The Spark log showed the
-replay batch contained 1 document, not 59.</p>
-<p><strong>What we observed about the sweep.</strong> On this particular edit the sweep found
-0 stale nodes — the edit only <em>added</em> elements (the inserted comment produces
-no AST node), so every old-generation id was re-emitted and refreshed by
-<code class="docutils literal notranslate"><span class="pre">MERGE</span></code>. The sweep earns its keep on edits that <em>remove</em> elements: <code class="docutils literal notranslate"><span class="pre">MERGE</span></code>
-never touches ids that stop being emitted, so they would accumulate silently.
-<code class="docutils literal notranslate"><span class="pre">verify_replay.py</span></code> (RESULT: PASS) simulates exactly that and confirms
-stale-generation nodes are removed; a second replay left the count stable at 19.</p>
+replay edit appends a function <em>and</em> shifts every line with a header comment;
+a line-based id scheme would have re-created the whole file. Instead the
+baseline’s 5 nodes / 4 edges were re-emitted with identical ids and <code class="docutils literal notranslate"><span class="pre">MERGE</span></code>
+updated them in place: the file went to 19 nodes / 23 edges with zero
+duplicate node ids and zero duplicate edge ids DB-wide, and MongoDB kept
+exactly one document — same <code class="docutils literal notranslate"><span class="pre">_id</span></code>, new <code class="docutils literal notranslate"><span class="pre">file_hash</span></code>. The Spark log shows the
+replay micro-batch carried exactly 1 document, resumed from the committed
+checkpoint offset.</p>
+<p><strong>Where the sweep earns its keep.</strong> The forward replay (adding code) leaves
+nothing stale — every old id is re-emitted, so <code class="docutils literal notranslate"><span class="pre">MERGE</span></code> refreshes them all. The
+reset in Step 2 is the opposite direction: removing the marker means 14 nodes
+and 19 edges of the marker generation are never re-emitted, and <code class="docutils literal notranslate"><span class="pre">MERGE</span></code> alone
+would leave them in the graph forever. The generation sweep deletes them by
+comparing each element’s <code class="docutils literal notranslate"><span class="pre">file_hash</span></code> to the current file hash — relationships
+first, then nodes, because an edge between two surviving nodes would outlive a
+node-only sweep (see <code class="docutils literal notranslate"><span class="pre">reports/evidence/task6_reset_sweep.json</span></code>).</p>
 <p><strong>Trade-off we accepted.</strong> The sweep is a separate step after the connector has
 drained rather than something the connector does itself. A Cypher sink
 statement cannot know that a file is “finished”, so delete-then-write inside
@@ -764,20 +898,17 @@ is slower but correct.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-and-reasoning">Approach and reasoning</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-the-three-layers-do-not-solve">The problem the three layers do <em>not</em> solve</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-source-level-proof-before-touching-any-database">Step 1 — source-level proof, before touching any database</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-record-the-before-state-of-both-databases">Step 2 — record the “before” state of both databases</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-actually-modify-the-file">Step 3 — actually modify the file</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-refresh-the-manifest-so-the-new-content-hash-is-picked-up">Step 4 — refresh the manifest so the new content hash is picked up</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-reprocess-only-that-file">Step 5 — reprocess ONLY that file</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-run-the-generation-sweep-to-remove-stale-nodes">Step 6 — run the generation sweep to remove stale nodes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-verify-neo4j-updated-no-duplicates">Step 7 — verify Neo4j: updated, no duplicates</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-8-verify-mongodb-document-updated-still-exactly-one">Step 8 — verify MongoDB: document updated, still exactly one</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-9-verify-the-spark-checkpoint-skipped-unchanged-offsets">Step 9 — verify the Spark checkpoint skipped unchanged offsets</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#database-ui-evidence">Database UI evidence</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-source-level-proof-before-touching-any-database">Step 1 — source-level proof, before touching any database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-record-the-before-state-of-both-databases">Step 2 — record the “before” state of both databases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-deterministic-baseline-reset">Step 2 — deterministic baseline reset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-record-the-before-state">Step 3 — record the BEFORE state</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-modify-exactly-one-file-idempotent-edit">Step 4 — modify exactly ONE file (idempotent edit)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-refresh-the-manifest-reprocess-only-that-file">Step 5 — refresh the manifest, reprocess ONLY that file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-wait-for-the-sinks-to-drain-then-generation-sweep">Step 6 — wait for the sinks to drain, then generation sweep</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-record-the-after-state">Step 7 — record the AFTER state</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-8-spark-checkpoint-evidence-from-the-real-log">Step 8 — Spark checkpoint evidence, from the real log</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-9-verification-verdict">Step 9 — verification verdict</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-ui-evidence">Database UI evidence</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reflection">Reflection</a></li>
 </ul>
   </nav></div>

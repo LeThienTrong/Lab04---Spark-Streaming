@@ -17,21 +17,28 @@ duplicate-free.
 
 ## Results from our run
 
-Measured on commit `a6c775e` of the upstream repository:
+Measured on commit `a6c775e` of the upstream repository. Two states exist by
+design: **Baseline** is the tree as cloned (what Tasks 1–5 ingest), and
+**After replay** is the state once Task 6 has added the `_lab_replay_marker`
+function plus a line-shifting header comment to `optimum/version.py` and
+reprocessed *that one file*. The difference between the columns — +6 LOC,
++14 nodes, +19 edges, +1 function, all in a single file — **is** the replay
+demonstration.
 
-| Metric | Value |
-|---|---|
-| Python files discovered | 74 |
-| Source files after exclusions | 59 |
-| Lines of code parsed | 13,725 |
-| CPG nodes emitted | 58,817 |
-| CPG edges emitted | 73,587 |
-| — AST | 57,760 |
-| — DFG | 8,259 |
-| — CFG | 4,987 |
-| — CALL | 2,581 |
-| Functions / classes | 522 / 153 |
-| Parse errors | 0 |
+| Metric | Baseline | After replay |
+|---|---:|---:|
+| Python files discovered | 74 | 74 |
+| Source files after exclusions | 59 | 59 |
+| Lines of code parsed | 13,725 | 13,731 |
+| CPG nodes emitted | 58,817 | 58,831 |
+| CPG edges emitted | 73,587 | 73,606 |
+| — AST | 57,760 | 57,774 |
+| — DFG | 8,259 | 8,261 |
+| — CFG | 4,987 | 4,990 |
+| — CALL | 2,581 | 2,581 |
+| Functions / classes | 522 / 153 | 523 / 153 |
+| Parse errors | 0 | 0 |
+| Duplicate node / edge ids | 0 / 0 | 0 / 0 |
 
 ```{note}
 `huggingface/optimum` is an active repository. If you re-run these notebooks

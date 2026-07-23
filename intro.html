@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -414,46 +414,68 @@ duplicate-free.</p>
 </section>
 <section id="results-from-our-run">
 <h2>Results from our run<a class="headerlink" href="#results-from-our-run" title="Link to this heading">#</a></h2>
-<p>Measured on commit <code class="docutils literal notranslate"><span class="pre">a6c775e</span></code> of the upstream repository:</p>
+<p>Measured on commit <code class="docutils literal notranslate"><span class="pre">a6c775e</span></code> of the upstream repository. Two states exist by
+design: <strong>Baseline</strong> is the tree as cloned (what Tasks 1–5 ingest), and
+<strong>After replay</strong> is the state once Task 6 has added the <code class="docutils literal notranslate"><span class="pre">_lab_replay_marker</span></code>
+function plus a line-shifting header comment to <code class="docutils literal notranslate"><span class="pre">optimum/version.py</span></code> and
+reprocessed <em>that one file</em>. The difference between the columns — +6 LOC,
++14 nodes, +19 edges, +1 function, all in a single file — <strong>is</strong> the replay
+demonstration.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Metric</p></th>
-<th class="head"><p>Value</p></th>
+<th class="head text-right"><p>Baseline</p></th>
+<th class="head text-right"><p>After replay</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Python files discovered</p></td>
-<td><p>74</p></td>
+<td class="text-right"><p>74</p></td>
+<td class="text-right"><p>74</p></td>
 </tr>
 <tr class="row-odd"><td><p>Source files after exclusions</p></td>
-<td><p>59</p></td>
+<td class="text-right"><p>59</p></td>
+<td class="text-right"><p>59</p></td>
 </tr>
 <tr class="row-even"><td><p>Lines of code parsed</p></td>
-<td><p>13,725</p></td>
+<td class="text-right"><p>13,725</p></td>
+<td class="text-right"><p>13,731</p></td>
 </tr>
 <tr class="row-odd"><td><p>CPG nodes emitted</p></td>
-<td><p>58,817</p></td>
+<td class="text-right"><p>58,817</p></td>
+<td class="text-right"><p>58,831</p></td>
 </tr>
 <tr class="row-even"><td><p>CPG edges emitted</p></td>
-<td><p>73,587</p></td>
+<td class="text-right"><p>73,587</p></td>
+<td class="text-right"><p>73,606</p></td>
 </tr>
 <tr class="row-odd"><td><p>— AST</p></td>
-<td><p>57,760</p></td>
+<td class="text-right"><p>57,760</p></td>
+<td class="text-right"><p>57,774</p></td>
 </tr>
 <tr class="row-even"><td><p>— DFG</p></td>
-<td><p>8,259</p></td>
+<td class="text-right"><p>8,259</p></td>
+<td class="text-right"><p>8,261</p></td>
 </tr>
 <tr class="row-odd"><td><p>— CFG</p></td>
-<td><p>4,987</p></td>
+<td class="text-right"><p>4,987</p></td>
+<td class="text-right"><p>4,990</p></td>
 </tr>
 <tr class="row-even"><td><p>— CALL</p></td>
-<td><p>2,581</p></td>
+<td class="text-right"><p>2,581</p></td>
+<td class="text-right"><p>2,581</p></td>
 </tr>
 <tr class="row-odd"><td><p>Functions / classes</p></td>
-<td><p>522 / 153</p></td>
+<td class="text-right"><p>522 / 153</p></td>
+<td class="text-right"><p>523 / 153</p></td>
 </tr>
 <tr class="row-even"><td><p>Parse errors</p></td>
-<td><p>0</p></td>
+<td class="text-right"><p>0</p></td>
+<td class="text-right"><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Duplicate node / edge ids</p></td>
+<td class="text-right"><p>0 / 0</p></td>
+<td class="text-right"><p>0 / 0</p></td>
 </tr>
 </tbody>
 </table>

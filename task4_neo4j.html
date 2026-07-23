@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -385,11 +385,11 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-idempotency-is-achieved">How idempotency is achieved</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-create-the-constraint-run-once-before-the-connectors">Step 1 — create the constraint (run once, before the connectors)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-confirm-the-neo4j-connector-plugin-is-installed">Step 2 — confirm the Neo4j connector plugin is installed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-register-both-sink-connectors">Step 3 — register both sink connectors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-register-both-sink-connectors-idempotent">Step 3 — register both sink connectors (idempotent)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-verify-both-connectors-and-their-tasks-are-running">Step 4 — verify both connectors and their tasks are RUNNING</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-run-the-parser-against-the-live-broker">Step 5 — run the parser against the live broker</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-verify-the-graph-in-neo4j">Step 6 — verify the graph in Neo4j</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-the-duplicate-check-that-must-return-zero-rows">Step 7 — the duplicate check that must return zero rows</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-the-duplicate-checks-that-must-return-zero-rows">Step 7 — the duplicate checks that must return zero rows</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#database-ui-evidence">Database UI evidence</a></li>
 </ul>
 </li>
@@ -440,6 +440,9 @@ than a scan, and makes duplicate nodes impossible at the database level.</p>
 </section>
 <section id="step-1-create-the-constraint-run-once-before-the-connectors">
 <h3>Step 1 — create the constraint (run once, before the connectors)<a class="headerlink" href="#step-1-create-the-constraint-run-once-before-the-connectors" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cypher-shell</span></code> prints nothing on success here — an empty output below means
+the constraint statement was accepted (it uses <code class="docutils literal notranslate"><span class="pre">IF</span> <span class="pre">NOT</span> <span class="pre">EXISTS</span></code>, so re-running
+is a no-op).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -466,28 +469,47 @@ than a scan, and makes duplicate nodes impossible at the database level.</p>
 </div>
 </div>
 </section>
-<section id="step-3-register-both-sink-connectors">
-<h3>Step 3 — register both sink connectors<a class="headerlink" href="#step-3-register-both-sink-connectors" title="Link to this heading">#</a></h3>
+<section id="step-3-register-both-sink-connectors-idempotent">
+<h3>Step 3 — register both sink connectors (idempotent)<a class="headerlink" href="#step-3-register-both-sink-connectors-idempotent" title="Link to this heading">#</a></h3>
+<p>Registration must be safe to run any number of times. A plain <code class="docutils literal notranslate"><span class="pre">POST</span></code> returns
+<strong>HTTP 409 (“connector already exists”)</strong> on the second run — that is not a
+pipeline error, just Connect refusing to create a duplicate. Instead of leaving
+a 409 in the output, this cell checks first: a missing connector is created
+with <code class="docutils literal notranslate"><span class="pre">POST</span></code>, an existing one gets its config re-applied with
+<code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/connectors/&lt;name&gt;/config</span></code>, which is a no-op when nothing changed.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8083/connectors<span class="w"> </span><span class="err">\</span>
-  <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;Content-Type:application/json&#39;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@src</span><span class="o">/</span><span class="n">neo4j</span><span class="o">/</span><span class="n">neo4j</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">nodes</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">json</span><span class="o">.</span><span class="n">tool</span>
-<span class="o">!</span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8083/connectors<span class="w"> </span><span class="err">\</span>
-  <span class="o">-</span><span class="n">H</span> <span class="s1">&#39;Content-Type:application/json&#39;</span> <span class="o">-</span><span class="n">d</span> <span class="nd">@src</span><span class="o">/</span><span class="n">neo4j</span><span class="o">/</span><span class="n">neo4j</span><span class="o">-</span><span class="n">sink</span><span class="o">-</span><span class="n">edges</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">json</span><span class="o">.</span><span class="n">tool</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span><span class="o">,</span><span class="w"> </span><span class="nn">urllib.request</span><span class="o">,</span><span class="w"> </span><span class="nn">urllib.error</span>
+
+<span class="n">BASE</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8083/connectors&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/config&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;PUT&quot;</span><span class="p">)</span>
+        <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: already registered -&gt; config re-applied (idempotent)&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="o">!=</span> <span class="mi">404</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span>
+            <span class="n">BASE</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">})</span>
+        <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: created&quot;</span><span class="p">)</span>
+
+<span class="n">register</span><span class="p">(</span><span class="s2">&quot;src/neo4j/neo4j-sink-nodes.json&quot;</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s2">&quot;src/neo4j/neo4j-sink-edges.json&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
-    &quot;error_code&quot;: 409,
-    &quot;message&quot;: &quot;Connector neo4j-sink-cpg-nodes already exists&quot;
-}
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{
-    &quot;error_code&quot;: 409,
-    &quot;message&quot;: &quot;Connector neo4j-sink-cpg-edges already exists&quot;
-}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>neo4j-sink-cpg-nodes: already registered -&gt; config re-applied (idempotent)
+neo4j-sink-cpg-edges: already registered -&gt; config re-applied (idempotent)
 </pre></div>
 </div>
 </div>
@@ -570,7 +592,7 @@ than a scan, and makes duplicate nodes impossible at the database level.</p>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  processed 59/59 files
-Event counts: {&#39;node&#39;: 58831, &#39;edge&#39;: 73606, &#39;metadata&#39;: 59, &#39;error&#39;: 0}
+Event counts: {&#39;node&#39;: 58817, &#39;edge&#39;: 73587, &#39;metadata&#39;: 59, &#39;error&#39;: 0}
 </pre></div>
 </div>
 </div>
@@ -589,25 +611,33 @@ Event counts: {&#39;node&#39;: 58831, &#39;edge&#39;: 73606, &#39;metadata&#39;:
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>nodes
-58831
+58817
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>type, n
-&quot;AST&quot;, 57774
-&quot;DFG&quot;, 8261
-&quot;CFG&quot;, 4990
+&quot;AST&quot;, 57760
+&quot;DFG&quot;, 8259
+&quot;CFG&quot;, 4987
 &quot;CALL&quot;, 2581
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="step-7-the-duplicate-check-that-must-return-zero-rows">
-<h3>Step 7 — the duplicate check that must return zero rows<a class="headerlink" href="#step-7-the-duplicate-check-that-must-return-zero-rows" title="Link to this heading">#</a></h3>
+<section id="step-7-the-duplicate-checks-that-must-return-zero-rows">
+<h3>Step 7 — the duplicate checks that must return zero rows<a class="headerlink" href="#step-7-the-duplicate-checks-that-must-return-zero-rows" title="Link to this heading">#</a></h3>
+<p>Idempotency evidence at the graph level: no two nodes share an <code class="docutils literal notranslate"><span class="pre">id</span></code>, and no two
+relationships share an <code class="docutils literal notranslate"><span class="pre">id</span></code>. Both queries must return nothing.</p>
+<p>With zero duplicate rows <code class="docutils literal notranslate"><span class="pre">cypher-shell</span></code> prints neither rows nor headers, so a
+completely <strong>empty output below is the pass condition</strong>. The machine-checked
+equivalent (<code class="docutils literal notranslate"><span class="pre">duplicate_nodes</span> <span class="pre">==</span> <span class="pre">0</span> <span class="pre">&amp;&amp;</span> <span class="pre">duplicate_edges</span> <span class="pre">==</span> <span class="pre">0</span></code>) is recorded in
+<code class="docutils literal notranslate"><span class="pre">reports/evidence/task6_verification.json</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>neo4j<span class="w"> </span>cypher-shell<span class="w"> </span>-u<span class="w"> </span>neo4j<span class="w"> </span>-p<span class="w"> </span>password<span class="w"> </span><span class="err">\</span>
   <span class="s2">&quot;MATCH (n:CpgNode) WITH n.id AS id, count(*) AS c WHERE c &gt; 1 RETURN id, c&quot;</span>
+<span class="o">!</span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>neo4j<span class="w"> </span>cypher-shell<span class="w"> </span>-u<span class="w"> </span>neo4j<span class="w"> </span>-p<span class="w"> </span>password<span class="w"> </span><span class="err">\</span>
+  <span class="s2">&quot;MATCH ()-[r:CPG_EDGE]-&gt;() WITH r.id AS id, count(*) AS c WHERE c &gt; 1 RETURN id, c&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -716,11 +746,11 @@ the sink order-independent across the two topics.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-idempotency-is-achieved">How idempotency is achieved</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-create-the-constraint-run-once-before-the-connectors">Step 1 — create the constraint (run once, before the connectors)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-confirm-the-neo4j-connector-plugin-is-installed">Step 2 — confirm the Neo4j connector plugin is installed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-register-both-sink-connectors">Step 3 — register both sink connectors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-register-both-sink-connectors-idempotent">Step 3 — register both sink connectors (idempotent)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-verify-both-connectors-and-their-tasks-are-running">Step 4 — verify both connectors and their tasks are RUNNING</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-run-the-parser-against-the-live-broker">Step 5 — run the parser against the live broker</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-verify-the-graph-in-neo4j">Step 6 — verify the graph in Neo4j</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-the-duplicate-check-that-must-return-zero-rows">Step 7 — the duplicate check that must return zero rows</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-the-duplicate-checks-that-must-return-zero-rows">Step 7 — the duplicate checks that must return zero rows</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#database-ui-evidence">Database UI evidence</a></li>
 </ul>
 </li>
