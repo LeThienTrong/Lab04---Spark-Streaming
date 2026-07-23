@@ -445,13 +445,35 @@ micro-batch with its id and document count, and — critically for Task 6 — a
 restart marker followed by <strong>no</strong> re-processing of already-committed offsets.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;=== spark|checkpoint location|batch [0-9]+: upserted&quot;</span><span class="w"> </span><span class="err">\</span>
-    <span class="n">reports</span><span class="o">/</span><span class="n">evidence</span><span class="o">/</span><span class="n">spark_stream</span><span class="o">.</span><span class="n">log</span> <span class="o">|</span> <span class="n">tail</span> <span class="o">-</span><span class="mi">25</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_repo_root</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="p">(</span><span class="n">start</span> <span class="ow">or</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">())</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">current</span><span class="p">,</span> <span class="o">*</span><span class="n">current</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">candidate</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;jupyter-book&quot;</span><span class="p">,</span> <span class="s2">&quot;reports&quot;</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Could not locate repository root&quot;</span><span class="p">)</span>
+
+<span class="n">SPARK_LOG</span> <span class="o">=</span> <span class="n">find_repo_root</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;reports&quot;</span> <span class="o">/</span> <span class="s2">&quot;evidence&quot;</span> <span class="o">/</span> <span class="s2">&quot;spark_stream.log&quot;</span>
+<span class="k">assert</span> <span class="n">SPARK_LOG</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;Missing Spark evidence: </span><span class="si">{</span><span class="n">SPARK_LOG</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">SPARK_LOG</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+    <span class="n">low</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;checkpoint location&quot;</span> <span class="ow">in</span> <span class="n">low</span> <span class="ow">or</span> <span class="s2">&quot;spark start&quot;</span> <span class="ow">in</span> <span class="n">low</span>
+            <span class="ow">or</span> <span class="s2">&quot;spark restart&quot;</span> <span class="ow">in</span> <span class="n">low</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;batch &quot;</span> <span class="ow">in</span> <span class="n">low</span> <span class="ow">and</span> <span class="s2">&quot;upserted&quot;</span> <span class="ow">in</span> <span class="n">low</span><span class="p">)):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>grep: reports/evidence/spark_stream.log: No such file or directory
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== spark start 2026-07-23T09:30:36+00:00 ===
+checkpoint location : file:///tmp/chk/cpg_metadata
+batch 26: upserted 60 metadata docs
+=== spark restart (checkpoint reuse test) 2026-07-23T09:31:57+00:00 ===
+checkpoint location : file:///tmp/chk/cpg_metadata
+batch 27: upserted 1 metadata docs
+batch 28: upserted 1 metadata docs
+batch 29: upserted 1 metadata docs
 </pre></div>
 </div>
 </div>
@@ -488,17 +510,19 @@ restart marker followed by <strong>no</strong> re-processing of already-committe
   _id: ObjectId(&#39;6a61bedeea4dfbfb3c244a8a&#39;),
   file_id: &#39;b3fc55405381fc8a&#39;,
   edge_counts: {
-    AST: 4
+    AST: 18,
+    CFG: 3,
+    DFG: 2
   },
-  event_time: &#39;2026-07-23T09:29:54.056418+00:00&#39;,
+  event_time: &#39;2026-07-23T09:35:24.545133+00:00&#39;,
   event_type: &#39;metadata&#39;,
-  file_hash: &#39;ac342f9e8fd3f74b822e8d7399806be6f17b733b37e1a01ae24a486ba8d330ce&#39;,
+  file_hash: &#39;e6df63ea2343b50e13f4aa7ab1ce9e76c5fb51d9e095f7a2cdcf2d5a649027d5&#39;,
   imports: [],
-  loc: 15,
-  num_ast_nodes: 5,
+  loc: 21,
+  num_ast_nodes: 19,
   num_classes: 0,
-  num_edges: 4,
-  num_functions: 0,
+  num_edges: 23,
+  num_functions: 1,
   rel_path: &#39;optimum/version.py&#39;,
   schema_version: &#39;1.0.0&#39;
 }

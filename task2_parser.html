@@ -689,8 +689,8 @@ edge breakdown : {&#39;AST&#39;: 57760, &#39;CFG&#39;: 4987, &#39;DFG&#39;: 8259
 <p><strong>What failed.</strong> Our first DFG implementation produced <strong>zero</strong> edges. The bug:
 we collected the stable node id at one point but then looked it up again in a
 map keyed by Python object id, so every lookup missed. The fix was to store the
-stable id directly at collection time. After the fix the same repository yielded
-8,258 DFG edges. This is exactly the class of bug that a “the code runs, so it
+stable id directly at collection time. After the fix this repository yields
+8,259 DFG edges at baseline (the executed cell above shows the same number). This is exactly the class of bug that a “the code runs, so it
 works” check misses — the pipeline was green while producing an incomplete graph.</p>
 <p><strong>What worked.</strong> Deriving identity from tree structure instead of position. The
 cell above proves it: shifting every line in the file left all node identifiers

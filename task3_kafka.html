@@ -510,6 +510,9 @@ schema_version: 1.0.0 | event_time: 2026-07-22T18:18:45.020019+00:00
 <div><p><strong>Run this cell against the running Docker stack.</strong> It requires
 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span> <span class="pre">-d</span></code> to have completed and the broker healthcheck to pass.</p>
 </div></blockquote>
+<p>Re-running this cell is idempotent: existing topics are reported as
+<code class="docutils literal notranslate"><span class="pre">exists</span> <span class="pre">...</span> <span class="pre">(already</span> <span class="pre">created,</span> <span class="pre">skipping)</span></code> and left untouched — partition count
+and cleanup policy are never silently changed on a live topic.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>src/kafka_setup/create_topics.py<span class="w"> </span>--bootstrap<span class="w"> </span>localhost:9092
@@ -517,10 +520,10 @@ schema_version: 1.0.0 | event_time: 2026-07-22T18:18:45.020019+00:00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>skip     cpg.nodes: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.nodes&#39;, num_partitions=6, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;compact&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.nodes&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.nodes&#39; already exists.&quot;)])&#39;.
-skip     cpg.edges: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.edges&#39;, num_partitions=6, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;compact&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.edges&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.edges&#39; already exists.&quot;)])&#39;.
-skip     cpg.metadata: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.metadata&#39;, num_partitions=1, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;compact&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.metadata&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.metadata&#39; already exists.&quot;)])&#39;.
-skip     cpg.errors: [Error 36] TopicAlreadyExistsError: Request &#39;CreateTopicsRequest_v3(create_topic_requests=[(topic=&#39;cpg.errors&#39;, num_partitions=1, replication_factor=1, replica_assignment=[], configs=[(config_key=&#39;cleanup.policy&#39;, config_value=&#39;delete&#39;), (config_key=&#39;retention.ms&#39;, config_value=&#39;604800000&#39;)])], timeout=30000, validate_only=False)&#39; failed with response &#39;CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic=&#39;cpg.errors&#39;, error_code=36, error_message=&quot;Topic &#39;cpg.errors&#39; already exists.&quot;)])&#39;.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>exists   cpg.nodes  (already created, skipping)
+exists   cpg.edges  (already created, skipping)
+exists   cpg.metadata  (already created, skipping)
+exists   cpg.errors  (already created, skipping)
 </pre></div>
 </div>
 </div>
@@ -550,7 +553,9 @@ cpg.nodes.dlq
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Topic: cpg.nodes	TopicId: HG_5LQ7CSQi1vSnYDhXyiA	PartitionCount: 6	ReplicationFactor: 1	Configs: cleanup.policy=compact
 	Topic: cpg.nodes	Partition: 0	Leader: 1	Replicas: 1	Isr: 1
-	Topic: cpg.nodes	Partition: 1	Leader: 1	Replicas: 1	Isr: 1
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>	Topic: cpg.nodes	Partition: 1	Leader: 1	Replicas: 1	Isr: 1
 	Topic: cpg.nodes	Partition: 2	Leader: 1	Replicas: 1	Isr: 1
 	Topic: cpg.nodes	Partition: 3	Leader: 1	Replicas: 1	Isr: 1
 	Topic: cpg.nodes	Partition: 4	Leader: 1	Replicas: 1	Isr: 1
